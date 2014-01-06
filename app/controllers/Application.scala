@@ -4,6 +4,9 @@ import play.api.mvc.{Action, Controller}
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
+import java.io.PrintWriter
+
+import scala.collection.mutable.{Set => MSet}
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
@@ -13,10 +16,38 @@ import org.snu.ids.ha.util.Timer
 
 object Application extends Controller {
 	val ma = new MorphemeAnalyzer()
+
   val words: Set[String] = scala.io.Source.fromFile("public/words/words.txt").getLines.foldLeft(Set[String]())(_ + _)
 
   def index = Action { implicit request =>
     Ok(views.html.index())
+  }
+
+  def rebuild = Action { implicit request =>
+    var count = 0
+    for (i <- 1.to(6)) {
+      val filename = "public/words/" + i + "000"
+      val words = scala.io.Source.fromFile(filename + ".txt").getLines
+      val out = new PrintWriter(filename + "-morpheme.txt")
+      for (word <- words) {
+        count += 1
+        if (count % 20 == 0) {
+          println(count)
+        }
+
+        val result1 = ma.analyze(word)
+			  val result2 = ma.postProcess(result1)
+			  val result3 = ma.leaveJustBest(result2)
+
+        val sentence: Sentence = ma.divideToSentences(result3).asScala.toList.head
+        val eojeol = sentence.head
+        val morpheme = eojeol.head
+        out.println(morpheme.asInstanceOf[Token].getString())
+      }
+      out.close()
+    }
+
+    Redirect(routes.Application.index())
   }
 
   def analyze = Action { implicit request =>
