@@ -1,25 +1,25 @@
 @()(implicit req: RequestHeader)
 
-@main("쉬운 단어로 글쓰기") {
+@main("다섯살 어린이에게") {
   <center>
-    <form>
-      <button id="request" class="btn btn-primary">확인</button> <br/>
-      <textarea id="text" rows="15" style="width: 50%; resize: none"></textarea>
-    </form>
-    <div id="result">
+    <div class="well" style="width: 50%">
+      <p>다섯살 어린이에게 말하듯 <a href="assets/words/words.txt">쉽게</a> 글을 써요.</p>
     </div>
+    <textarea id="text" rows="15" style="width: 50%; resize: none">어려운 말을 쓰면 이렇게 밑줄이 생깁니다.</textarea>
+
+    <script type="text/javascript" src="assets/phpspellcheck/include.js"></script>
     <script type="text/javascript">
-      $("#request").click(function() {
-        var text = $("#text").val();
-        jsRoutes.controllers.Application.analyze().ajax({
-          data: {text: text},
-          success: function(data) {
-            console.log(data.message)
-            $("#result").html(data.message)
-          }
-        });
-        return false;
-      })
+      var mySpell = new LiveSpellInstance()
+      mySpell.Fields = "TEXTAREAS"
+      mySpell.Language = "Dansk"
+      mySpell.UserInterfaceLanguage = "en"
+      mySpell.CaseSensitive = false
+      mySpell.IgnoreAllCaps = false
+      mySpell.IgnoreNumeric = false
+      mySpell.CheckGrammar = false
+      mySpell.ShowMeanings = false
+      mySpell.ShowSummaryScreen = false
+      mySpell.ActivateAsYouType()
     </script>
   </center>
 }

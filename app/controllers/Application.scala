@@ -50,46 +50,61 @@ object Application extends Controller {
     Redirect(routes.Application.index())
   }
 
-  def analyze = Action { implicit request =>
-    request.body.asFormUrlEncoded match {
+  def spellcheck = Action { implicit request =>
+    println("spellcheck")
+    request.queryString.get("args") match {
       case None =>
         NotFound
-      case Some(params) =>
-        val text = params("text")(0)
-        val out = new StringBuilder
-
-		    try {
-          val result1 = ma.analyze(text)
-			    val result2 = ma.postProcess(result1)
-			    val result3 = ma.leaveJustBest(result2)
-
-          val sentences: List[Sentence] = ma.divideToSentences(result3).asScala.toList
-          for (sentence <- sentences) {
-				    // out.append("=============================================<br />")
-            // out.append(sentence.getSentence() + "<br />")
-            for (word <- sentence) {
-              for (morpheme <- word) {
-                if (
-                  !words.contains(morpheme.asInstanceOf[Token].getString()) &&
-                  morpheme.getTag()(0) != 'J' &&
-                  morpheme.getTag()(0) != 'E' &&
-                  morpheme.getTag()(0) != 'S'
-                ) {
-                  out.append(morpheme + "<br />")
-                }
-
-                // morpheme.asInstanceOf[Token].getIndex()
-                // morpheme.asInstanceOf[Token].getString()
-                // morpheme.getTag()
-              }
-					    // out.append(word + "<br />")
-            }
-			    }
-		    } catch {
-			    case e: Exception => e.printStackTrace()
-		    }
-
-        Ok(Json.obj("message" -> out.toString))
+      case Some(argstrs) =>
+        val args = argstrs(0).split('\u0001')
+        val tfs = new StringBuilder
+        val xss = new StringBuilder
+        for (arg <- args) {
+          if (spellcheckLookup(arg)) {
+            tfs.append("T")
+            xss.append("-")
+          }
+          else {
+            println("failed spellcheck: " + arg)
+            tfs.append("F")
+            xss.append("X") // TODO: don't know
+          }
+        }
+        Ok("CTXSPELL" + '\u0005' + 0 + '\u0005' + tfs.toString + '\u0005' + xss.toString)
     }
+  }
+
+  def spellcheckLookup(text: String): Boolean = {
+		try {
+      val result1 = ma.analyze(text)
+			val result2 = ma.postProcess(result1)
+			val result3 = ma.leaveJustBest(result2)
+
+      val sentences: List[Sentence] = ma.divideToSentences(result3).asScala.toList
+      for (sentence <- sentences) {
+				// out.append("=============================================<br />")
+        // out.append(sentence.getSentence() + "<br />")
+        for (word <- sentence) {
+          for (morpheme <- word) {
+            if (
+              !words.contains(morpheme.asInstanceOf[Token].getString()) &&
+                morpheme.getTag()(0) != 'J' &&
+                morpheme.getTag()(0) != 'E' &&
+                morpheme.getTag()(0) != 'S'
+            ) {
+              return false
+            }
+
+            // morpheme.asInstanceOf[Token].getIndex()
+            // morpheme.asInstanceOf[Token].getString()
+            // morpheme.getTag()
+          }
+        }
+			}
+		} catch {
+			case e: Exception => e.printStackTrace()
+		}
+
+    return true
   }
 }

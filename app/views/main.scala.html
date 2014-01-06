@@ -2,30 +2,88 @@
 
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>@title</title>
     <link rel='shortcut icon' type='image/png' href='@routes.Assets.at("images/favicon.png")'>
     <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))'>
     <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
-    @helper.javascriptRouter("jsRoutes")(
-      routes.javascript.Application.analyze
-    )    
-    <style>
-    body {
-        margin-top: 50px;
-    }
+    @helper.javascriptRouter("jsRoutes")()
+    <style type="text/css">
+
+      /* Sticky footer styles
+      -------------------------------------------------- */
+
+      html,
+      body {
+      height: 100%;
+      /* The html and body elements cannot have any padding or margin. */
+      }
+
+      /* Wrapper for page content to push down footer */
+      #wrap {
+      min-height: 100%;
+      height: auto !important;
+      height: 100%;
+      /* Negative indent footer by it's height */
+      margin: 0 auto -60px;
+      }
+
+      /* Set the fixed height of the footer here */
+      #push,
+      #footer {
+      height: 60px;
+      }
+      #footer {
+      background-color: #f5f5f5;
+      }
+
+      /* Lastly, apply responsive CSS fixes as necessary */
+      @@media (max-width: 767px) {
+      #footer {
+      margin-left: -20px;
+      margin-right: -20px;
+      padding-left: 20px;
+      padding-right: 20px;
+      }
+      }
+
+      /* Custom page CSS
+      -------------------------------------------------- */
+      /* Not required for template or sticky footer method. */
+
+      #wrap > .container {
+      padding-top: 60px;
+      }
+      .container .credit {
+      margin: 20px 0;
+      }
+
+      code {
+      font-size: 80%;
+      }
     </style>
-</head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+  </head>
+  <body>
+    <div id="wrap">
+      <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
-            <div class="container-fluid">
-                <a id="titleLink" class="brand" href="/">@title</a>
-            </div>
+          <div id="fork-me">
+            <a href="https://github.com/lunaticas/easyword/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+          </div>
+          <div class="container-fluid">
+            <a id="titleLink" class="brand" href="/">@title</a>
+          </div>
         </div>
-    </div>
-    <div class="container">
+      </div>
+      <div class="container">
         @content
+      </div>
+      <div id="push"></div>
     </div>
-</body>
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit"><a href="http://ropas.snu.ac.kr/~jhkang">강지훈</a>이 만듬 / 동기: <a href="http://xkcd.com/1133/">위로 올라가는거</a>, <a href="http://splasho.com/upgoer5/">영어 버전</a> / 참고자료: <a href="http://ko.wiktionary.org/wiki/부록:자주_쓰이는_한국어_낱말_5800">사전</a>, <a href="http://kkma.snu.ac.kr/documents/index.jsp">형태소 분석기</a>, <a href="http://www.phpspellcheck.com">PHP Spell Check</a></p>
+      </div>
+    </div>
+  </body>
 </html>
