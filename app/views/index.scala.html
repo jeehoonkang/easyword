@@ -1,9 +1,25 @@
-@(message: String)
+@()(implicit req: RequestHeader)
 
-@main("Welcome to Play Framework") {
-
-    <div class="well">
-        <h1>@message</h1>
+@main("쉬운 단어로 글쓰기") {
+  <center>
+    <form>
+      <button id="request" class="btn btn-primary">확인</button> <br/>
+      <textarea id="text" rows="15" style="width: 50%; resize: none"></textarea>
+    </form>
+    <div id="result">
     </div>
-
+    <script type="text/javascript">
+      $("#request").click(function() {
+        var text = $("#text").val();
+        jsRoutes.controllers.Application.analyze().ajax({
+          data: {text: text},
+          success: function(data) {
+            console.log(data.message)
+            $("#result").html(data.message)
+          }
+        });
+        return false;
+      })
+    </script>
+  </center>
 }
