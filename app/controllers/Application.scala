@@ -31,29 +31,24 @@ object Application extends Controller with MongoController {
     Ok(views.html.index())
   }
 
-  def rebuild = Action { implicit request =>
-    var count = 0
-    for (i <- 1.to(6)) {
-      val filename = "public/words/" + i + "000"
-      val words = scala.io.Source.fromFile(filename + ".txt").getLines
-      val out = new PrintWriter(filename + "-morpheme.txt")
-      for (word <- words) {
-        count += 1
-        if (count % 20 == 0) {
-          println(count)
+  def build = Action { implicit request =>
+    val filename = "public/words/fables-fails.txt"
+    val words = scala.io.Source.fromFile(filename).getLines
+    val out = new PrintWriter("public/words/fables-morpheme.txt")
+    for (word <- words) {
+      val result1 = ma.analyze(word)
+			val result2 = ma.postProcess(result1)
+			val result3 = ma.leaveJustBest(result2)
+
+      val sentence: Sentence = ma.divideToSentences(result3).asScala.toList.head
+      for (eojeol <- sentence) {
+        for (morpheme <- eojeol) {
+          out.println(morpheme.getString)
+          // out.println(morpheme.asInstanceOf[Token].getString())
         }
-
-        val result1 = ma.analyze(word)
-			  val result2 = ma.postProcess(result1)
-			  val result3 = ma.leaveJustBest(result2)
-
-        val sentence: Sentence = ma.divideToSentences(result3).asScala.toList.head
-        val eojeol = sentence.head
-        val morpheme = eojeol.head
-        out.println(morpheme.asInstanceOf[Token].getString())
       }
-      out.close()
     }
+    out.close()
 
     Redirect(routes.Application.index())
   }

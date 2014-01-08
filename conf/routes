@@ -3,6 +3,7 @@
 # ~~~~
 
 GET     /                           controllers.Application.index()
+# GET     /build                      controllers.Application.build()
 GET     /assets/phpspellcheck/core/ controllers.Application.spellcheck()
 
 # Map static resources from the /public folder to the /assets URL path
