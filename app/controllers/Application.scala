@@ -1,9 +1,5 @@
 package controllers
 
-import play.api.mvc.{Action, Controller}
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
-
 import java.io.PrintWriter
 
 import scala.collection.mutable.{Set => MSet}
@@ -14,11 +10,23 @@ import org.snu.ids.ha.ma.{Token, MExpression, Sentence}
 import org.snu.ids.ha.ma.MorphemeAnalyzer
 import org.snu.ids.ha.util.Timer
 
-object Application extends Controller {
-	val ma = new MorphemeAnalyzer()
+import play.api._
+import play.api.mvc._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import scala.concurrent.Future
 
+import reactivemongo.api._
+import play.modules.reactivemongo.MongoController
+import play.modules.reactivemongo.json.collection.JSONCollection
+
+object Application extends Controller with MongoController {
+	val ma = new MorphemeAnalyzer()
   val words: Set[String] = scala.io.Source.fromFile("public/words/words.txt").getLines.foldLeft(Set[String]())(_ + _)
 
+  def collection: JSONCollection = db.collection[JSONCollection]("fails")
+  
   def index = Action { implicit request =>
     Ok(views.html.index())
   }
@@ -51,7 +59,6 @@ object Application extends Controller {
   }
 
   def spellcheck = Action { implicit request =>
-    println("spellcheck")
     request.queryString.get("args") match {
       case None =>
         NotFound
@@ -65,9 +72,9 @@ object Application extends Controller {
             xss.append("-")
           }
           else {
-            println("failed spellcheck: " + arg)
             tfs.append("F")
-            xss.append("X") // TODO: don't know
+            xss.append("X")
+            collection.insert(Json.obj("word" -> arg))
           }
         }
         Ok("CTXSPELL" + '\u0005' + 0 + '\u0005' + tfs.toString + '\u0005' + xss.toString)
