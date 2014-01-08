@@ -1,11 +1,13 @@
-@()(implicit req: RequestHeader)
+@(text: String)(implicit req: RequestHeader)
 
 @main("쉽게 말해요") {
   <div class="row-fluid">
     <div class="span3"></div>
     <div class="span6 well">
       <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href="assets/words/words.txt">가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써봐요.</p>
-      <textarea id="text" rows="15" style="width: 95%; resize: none">어려운 말을 쓰면 이렇게 밑줄이 생겨요.</textarea>
+      <textarea id="text" rows="15" style="width: 95%; resize: none"></textarea>
+      <div id="input" style="display:none">@text</div>
+      <center><p>이 글 <a id="share" href="">공유</a>하기 (permalink)</p></center>
     </div>
     <div class="span3"></div>
   </div>
@@ -40,7 +42,25 @@
     </div>
   </div>
 
-  <script type="text/javascript" src="assets/phpspellcheck/include.js"></script>
+  <script type="text/javascript" src='@routes.Assets.at("js/base64.js")'></script>
+  <script type="text/javascript">
+    var text = $("#input").text()
+    if (text == "") {
+      $("#text").val("어려운 말을 쓰면 이렇게 밑줄이 생겨요.")
+    }
+    else {
+      $("#text").val(decodeURIComponent(Base64.decode(text)))
+    }
+
+    $("#share").click(function() {
+      var text = $("#text").val()
+      var encoded = encodeURIComponent(Base64.encode(text))
+      window.location = "/?text=" + encoded;
+      return false
+    })
+  </script>
+
+  <script type="text/javascript" src='@routes.Assets.at("phpspellcheck/include.js")'></script>
   <script type="text/javascript">
     var mySpell = new LiveSpellInstance()
     mySpell.Fields = "TEXTAREAS"

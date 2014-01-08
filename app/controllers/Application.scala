@@ -21,6 +21,8 @@ import reactivemongo.api._
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
 
+import org.apache.commons.codec.binary.Base64
+
 object Application extends Controller with MongoController {
 	val ma = new MorphemeAnalyzer()
   val words: Set[String] = scala.io.Source.fromFile("public/words/words.txt").getLines.foldLeft(Set[String]())(_ + _)
@@ -28,7 +30,12 @@ object Application extends Controller with MongoController {
   def collection: JSONCollection = db.collection[JSONCollection]("fails")
   
   def index = Action { implicit request =>
-    Ok(views.html.index())
+    val text = request.queryString.get("text") match {
+      case None => ""
+      case Some(text) => text(0)
+    }
+
+    Ok(views.html.index(text))
   }
 
   def build = Action { implicit request =>
