@@ -1,16 +1,10 @@
-@()(implicit req: RequestHeader)
+@(message: String)(implicit req: RequestHeader)
 
 @main("쉽게 말해요") {
   <div class="row-fluid">
     <div class="span3"></div>
     <div class="span6 well">
-      <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href="assets/words/words.txt">가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써봐요.</p>
-      <form action="submit" method="POST">
-        <textarea id="text" name="text" rows="15" style="width: 95%; resize: none">어려운 말을 쓰면 이렇게 밑줄이 생겨요.</textarea>
-        <p>이름: <input id="author" name="author" class="span3"></input>
-        <button id="submit" class="btn btn-primary">제출</button>&nbsp;<span id="message"></span></p>
-        <input id="count" style="display: none"></input>
-      </form>
+      <p>@message <a href="/">뒤로 돌아가기</a></p>
     </div>
     <div class="span3"></div>
   </div>
@@ -45,40 +39,4 @@
       </ul>
     </div>
   </div>
-
-  <script type="text/javascript" src='@routes.Assets.at("phpspellcheck/include.js")'></script>
-  <script type="text/javascript">
-    var mySpell = new LiveSpellInstance()
-    mySpell.Fields = "TEXTAREAS"
-    mySpell.CaseSensitive = false
-    mySpell.IgnoreAllCaps = false
-    mySpell.IgnoreNumeric = false
-    mySpell.CheckGrammar = false
-    mySpell.ShowMeanings = false
-    mySpell.ShowSummaryScreen = false
-    mySpell.ActivateAsYouType()
-  </script>
-
-  <script type="text/javascript">
-    var textTag = $('#text');
-    var authorTag = $('#author');
-    var countTag = $('#count');
-    
-    function enableButton() {
-      if ((textTag.val() != "" && textTag.val() != "\n") && authorTag.val() != "" && countTag.val() == "0") {
-        $('#submit').removeAttr('disabled');
-      } else {
-        $('#submit').attr('disabled', 'disabled');
-      }
-    };
-
-    textTag.bind('blur keyup', function() {
-      enableButton();
-    });
-    authorTag.bind('blur keyup', function() {
-      enableButton();
-    });
-
-    enableButton();
-  </script>
 }
