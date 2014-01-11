@@ -18,26 +18,18 @@ import play.api.libs.json._
 import play.api.Play.current
 import scala.concurrent.Future
 
-import reactivemongo.api._
-import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
-
-import org.apache.commons.codec.binary.Base64
-
 import com.typesafe.plugin._
 
-object Application extends Controller with MongoController {
+object Application extends Controller with Secured {
   val ma = new MorphemeAnalyzer()
   val words: Set[String] = scala.io.Source.fromFile("public/words/words.txt").getLines.foldLeft(Set[String]())(_ + _)
 
-  def submissions: JSONCollection = db.collection[JSONCollection]("submissions")
-  def collection: JSONCollection = db.collection[JSONCollection]("fails")
   
-  def index = Action { implicit request =>
+  def index = withUser { user => implicit request =>
     Ok(views.html.index())
   }
 
-  def submit = Action { implicit request =>
+  def submit = withUser { user => implicit request =>
     val author = request.body.asFormUrlEncoded.get("author")(0)
     val content = request.body.asFormUrlEncoded.get("text")(0)
     val contents = content.split("\\s")
@@ -48,8 +40,6 @@ object Application extends Controller with MongoController {
       mail.addRecipient("EasyWord <easyword@jeehoon.me>","easyword@jeehoon.me")
       mail.addFrom("EasyWord <easyword@jeehoon.me>")
       mail.send("author: " + author + "\ncontent:\n" + content)
-
-      submissions.insert(Json.obj("author" -> author, "content" -> content))
 
       Ok(views.html.submit("제출되었어요!"))
     }
@@ -91,7 +81,7 @@ object Application extends Controller with MongoController {
     Redirect(routes.Application.index())
   }
 
-  def spellcheck = Action { implicit request =>
+  def spellcheck = withUser { user => implicit request =>
     request.queryString.get("args") match {
       case None =>
         NotFound
@@ -107,7 +97,6 @@ object Application extends Controller with MongoController {
           else {
             tfs.append("F")
             xss.append("X")
-            collection.insert(Json.obj("word" -> arg))
           }
         }
         Ok("CTXSPELL" + '\u0005' + 0 + '\u0005' + tfs.toString + '\u0005' + xss.toString)
