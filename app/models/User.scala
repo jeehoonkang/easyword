@@ -8,38 +8,41 @@ import play.api.libs.json._
 import play.api.Play.current
 import scala.concurrent.Future
 
-case class User(email: String, name: String)
-
 import com.mongodb.casbah.Imports._
 
 import org.mindrot.jbcrypt.BCrypt
+
+case class User(email: String, name: String)
 
 object User {
   val mongoClient = MongoClient("localhost", 27017)
   val db = mongoClient("easyword")
   val collection = db("user")
 
-  private def findByEmail(email: String): Option[(User, String)] = {
+  private def fromObject(obj: MongoDBObject): Option[(ObjectId, User, String)] = {
+    (obj.getAs[ObjectId]("_id"), obj.getAs[String]("email"), obj.getAs[String]("name"), obj.getAs[String]("password")) match {
+      case (Some(id), Some(email), Some(name), Some(password)) => Some((id, User(email, name), password))
+      case _ => None
+    }
+  }
+
+  private def findByEmail(email: String): Option[(ObjectId, User, String)] = {
     collection.findOne(MongoDBObject("email" -> email)) match {
       case None => None
-      case Some(json) =>
-        (json.getAs[String]("email"), json.getAs[String]("name"), json.getAs[String]("password")) match {
-          case (Some(email), Some(name), Some(password)) => Some((User(email, name), password))
-          case _ => None
-        }
+      case Some(obj) => fromObject(obj)
     }
   }
   
-  def findUserByEmail(email: String): Option[User] = {
-    findByEmail(email) map { case (user, _) =>
-      user
+  def findUserByEmail(email: String): Option[(ObjectId, User)] = {
+    findByEmail(email) map { case (id, user, _) =>
+      (id, user)
     }
   }
   
   def authenticate(email: String, password: String): Option[User] = {
     findByEmail(email) match {
       case None => None
-      case Some((user, hashed_password)) =>
+      case Some((_, user, hashed_password)) =>
         if (BCrypt.checkpw(password, hashed_password)) Some(user)
         else None
     }

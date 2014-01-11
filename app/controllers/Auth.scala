@@ -11,6 +11,7 @@ import play.api.Play.current
 import scala.concurrent.Future
 
 import models._
+import com.mongodb.casbah.Imports._
 
 object Auth extends Controller {  
   val loginForm = Form(
@@ -53,7 +54,7 @@ object Auth extends Controller {
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.login(registerForm, formWithErrors)),
-      user => Redirect(routes.Application.index).withSession(Security.username -> user._1)
+      user => Redirect(routes.Board.index).withSession(Security.username -> user._1)
     )
   }
 
@@ -65,7 +66,7 @@ object Auth extends Controller {
       },
       register => {
         User.create(User(register._1, register._2), register._3)
-        Redirect(routes.Application.index).withSession(Security.username -> register._1)
+        Redirect(routes.Board.index).withSession(Security.username -> register._1)
       }
     )
   }
@@ -89,9 +90,9 @@ trait Secured {
     }
   }
 
-  def withUser(f: User => Request[AnyContent] => Result) = withAuth { username => implicit request =>
-    User.findUserByEmail(username).map { user =>
-      f(user)(request)
+  def withUser(f: (ObjectId, User) => Request[AnyContent] => Result) = withAuth { username => implicit request =>
+    User.findUserByEmail(username).map { case (userid, user) =>
+      f(userid, user)(request)
     }.getOrElse(onUnauthorized(request))
   }
 }

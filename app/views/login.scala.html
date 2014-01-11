@@ -1,19 +1,24 @@
 @(registerForm: Form[(String,String,String,String,String)], form: Form[(String,String)])(implicit req: RequestHeader, flash: Flash)
 
 @main("로그인") {
-<div class="row-fluid">
-  <div class="span4">
-    <h4>
-      <a href="http://rosaec.snu.ac.kr">ROSAEC</a> 백일장
-    </h4>
+  <div class="hero-unit">
     <p>
-      연구 내용을 쉽게 쓸 수 있는 내공이 있으세요?<br />
+      <h2>
+        연구 내용을 쉽게 쓸 수 있는 내공이 있으세요?
+      </h2>
       <a href="assets/words/words.txt">가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써봐요.
     </p>
   </div>
+<div class="row-fluid">
+  <div class="span4">
+    <h4>맛보기</h4>
+    <p><span id="message"></span></p>
+    <textarea id="text" name="text" rows="7" style="width: 95%; resize: none">어려운 말을 쓰면 이렇게 밑줄이 생겨요.</textarea>    
+    <input id="count" style="display: none"></input>
+  </div>
   <div class="span4">
     @helper.form(routes.Auth.register) {
-    <h4>회원가입</h4>
+    <p><button class="btn btn-primary" type="submit" id="register_loginbutton">회원가입</button></p>
     @registerForm.globalError.map { error =>
     <p class="text-error">
       @error.message
@@ -24,14 +29,15 @@
       <input type="text" name="register_name" placeholder="이름" id="register_name" value="@registerForm("register_name").value"><br />
       <input type="password" name="register_password" id="register_password" placeholder="패스워드"><br />
       <input type="password" name="register_password_repeat" id="register_password_repeat" placeholder="패스워드 반복"><br />
-      <input type="text" name="register_answer" id="register_answer" value="@registerForm("register_answer").value" placeholder="ROSAEC 워크샵이 열리는 도시는?"><br />
-      <button class="btn btn-primary" type="submit" id="register_loginbutton">회원가입</button>
+      <input type="text" name="register_answer" id="register_answer" value="@registerForm("register_answer").value" placeholder="ROSAEC 워크샵이 열리는 도시는?">
     </p>
     }
   </div>
   <div class="span4">
     @helper.form(routes.Auth.authenticate) {
-    <h4>로그인</h4>
+    <p>
+      <button class="btn btn-primary" type="submit" id="loginbutton">로그인</button>
+    </p>
     @form.globalError.map { error =>
     <p class="text-error">
       @error.message
@@ -44,8 +50,7 @@
     }
     <p>
       <input type="email" name="email" placeholder="Email" id="email" value="@form("email").value"><br />
-      <input type="password" name="password" id="password" placeholder="패스워드"><br />
-      <button class="btn btn-primary" type="submit" id="loginbutton">로그인</button>
+      <input type="password" name="password" id="password" placeholder="패스워드">
     </p>
     }
   </div>
@@ -79,5 +84,37 @@
       <li><a href="http://www.phpspellcheck.com">PHP Spell Check</a></li>
     </ul>
   </div>
+
+  <script type="text/javascript" src='@routes.Assets.at("phpspellcheck/include.js")'></script>
+  <script type="text/javascript">
+    var mySpell = new LiveSpellInstance()
+    mySpell.Fields = "TEXTAREAS"
+    mySpell.CaseSensitive = false
+    mySpell.IgnoreAllCaps = false
+    mySpell.IgnoreNumeric = false
+    mySpell.CheckGrammar = false
+    mySpell.ShowMeanings = false
+    mySpell.ShowSummaryScreen = false
+    mySpell.ActivateAsYouType()
+  </script>
+
+  <script type="text/javascript">
+    var textTag = $('#text');
+    var countTag = $('#count');
+    
+    function enableButton() {
+      if ((textTag.val() != "" && textTag.val() != "\n") && countTag.val() == "0") {
+        $('#submit').removeAttr('disabled');
+      } else {
+        $('#submit').attr('disabled', 'disabled');
+      }
+    };
+
+    textTag.bind('blur keyup', function() {
+      enableButton();
+    });
+
+    enableButton();
+  </script>
 </div>
 }
