@@ -1,7 +1,7 @@
 @(title: String)(content: Html)(implicit req: RequestHeader)
 
 <!DOCTYPE html>
-<html>
+<html ng-app>
   <head>
     <title>2014 소프트웨어 무결점 백일장 - @title</title>
     <link rel='shortcut icon' type='image/png' href='@routes.Assets.at("images/favicon.png")'>
@@ -9,6 +9,7 @@
     <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))'>
     <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap-responsive.css"))'>
     <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
+    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("angular.js"))'></script>
     @helper.javascriptRouter("jsRoutes")()
     <style type="text/css">
 
@@ -73,7 +74,7 @@
             <a href="https://github.com/lunaticas/easyword/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
           </div>
           <div class="container-fluid">
-            <a id="titleLink" class="brand" href="/">2014 소프트웨어 무결점 백일장</a>
+            <a id="titleLink" class="brand" href='@routes.Board.index()'>2014 소프트웨어 무결점 백일장</a>
           </div>
         </div>
       </div>

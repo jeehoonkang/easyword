@@ -26,28 +26,56 @@ object Board extends Controller with Secured {
     Ok(views.html.index())
   }
 
-  def submit = withUser { case (userid, user) => implicit request =>
+  def create = withUser { case (userid, user) => implicit request =>
     val content = request.body.asFormUrlEncoded.get("text")(0)
     val contents = content.split("\\s")
 
     if (contents.forall(SpellCheck.spellcheckLookup(_))) {
       Article.create(Article(userid, content, new DateTime()))
+      Redirect(routes.Board.index).flashing(
+        "success" -> "글을 저장했어요!"
+      )
       // val mail = use[MailerPlugin].email
       // mail.setSubject("Easyword from " + user.name + " (" + user.email +  ")")
       // mail.addRecipient("EasyWord <easyword@jeehoon.me>","easyword@jeehoon.me")
       // mail.addFrom("EasyWord <easyword@jeehoon.me>")
       // mail.send("author: " + user.name + " (" + user.email +  ")" + "\ncontent:\n" + content)
-
-      Ok(views.html.submit("제출되었어요!"))
     }
     else {
-      Ok(views.html.submit("어려운 단어가 있어서 제출 못했어요."))
+      Redirect(routes.Board.index).flashing(
+        "error" -> "어려운 단어가 있어서 저장 못했어요."
+      )
     }
   }
 
-  def submitComment(id: Int) = withUser { case (userid, user) => implicit request =>
+  def createComment(id: Int) = withUser { case (userid, user) => implicit request =>
     // TODO
     Ok(views.html.index())
+  }
+
+  def articles(skip: Int, limit: Int) = withUser { case (userid, user) => implicit request =>
+    val reducedLimit = if (limit > 20) 20 else limit
+    val articles = Article.findArticles(skip, reducedLimit)
+    Ok(articles.toString) // TODO
+
+    // {id: '1234',
+    //  content: '안녕하세요\n안녕하세요',
+
+    //  authorEmail: 'jeehoon@jeehoon.me',
+    //  authorName: '강지훈',
+    //  authorId: "123",
+
+    //  created: "created-value",
+
+    //  numComments: 10,
+    //  liked: true
+    // }
+  }
+
+  def comments(articleId: String) = withUser { case (userid, user) => implicit request =>
+    Comment.findCommentByArticle(new ObjectId(articleId))
+    Article.like(new ObjectId(articleId), userid);
+    Ok("")
   }
 
   def like(articleId: String) = withUser { case (userid, user) => implicit request =>

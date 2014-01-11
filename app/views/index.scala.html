@@ -1,11 +1,21 @@
-@()(implicit req: RequestHeader)
+@()(implicit req: RequestHeader, flash: Flash)
 
 @main("대문") {
   <div class="row-fluid">
     <div class="span2"></div>
     <div class="span8 well">
-      <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href="assets/words/words.txt">가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써봐요.</p>
-      <form action="article/submit" method="POST">
+      @flash.get("success").map { info =>
+      <p class="text-success">
+        @info
+      </p>
+      }
+      @flash.get("error").map { error =>
+      <p class="text-error">
+        @error
+      </p>
+      }
+      <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href='@routes.WebJarAssets.at("words/words.txt")'>가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써봐요.</p>
+      <form action="board/article/create" method="POST">
         <textarea id="text" name="text" rows="10" style="width: 95%; resize: none">어려운 말을 쓰면 이렇게 밑줄이 생겨요.</textarea>
         <button id="submit" class="btn btn-primary">제출</button>&nbsp;<span id="message"></span></p>
         <input id="count" style="display: none"></input>
@@ -16,24 +26,66 @@
 
   <div class="row-fluid">
     <div class="span2"></div>
-    <div id="articles" class="span8">
-      <div class="well">
-        <p><strong><a href="mailto:jeehoon@@jeehoon.me">강지훈</a></strong></p>
-        <p>안녕하세요?<br />
-          안녕하세요?<br />
-          안녕하세요?<br />
-          안녕하세요?
-        </p>
+    <ul ng-controller="ArticleCtrl" class="unstyled span8">
+      <li ng-repeat="article in articles" class="well">
+        <p><strong><a href="mailto:{{article.authorEmail}}">{{article.authorName}}</a></strong></p>
+        <p>{{article.content}}</p>
         <p style="font-size: 13px">
-          <a href="">좋아요</a>
-          <a href="">댓글 10개 보기</a>
+          <a href="" ng-click="like(article)" style="{{article.likeStyle}}">좋아요</a>
+          <a href="" ng-click="unlike(article)" style="{{article.unlikeStyle}}">좋아요 취소</a>
+          <a href="" ng-click="getComments(article)" style="{{article.getCommentsStyle}}">댓글 {{article.numComments}}개 보기</a>
         </p>
-        <p><textarea rows="3" style="font-size: 13px; width: 95%; resize: none"></textarea></p>
-      </div>
-    </div>
+        <p>
+          <div class="comments" style="display: none">
+            <ul>
+              <li>
+                TODO
+              </li>
+            </ul>
+          </div>
+          <textarea rows="3" style="font-size: 13px; width: 95%; resize: none"></textarea>
+        </p>
+      </li>
+    </ul>
     <div class="span2"></div>
   </div>
-  
+
+  <script type="text/javascript" src='@routes.Assets.at("js/article.js")'></script>
+  <!-- <script type="text/javascript"> -->
+  <!--   var articles = $("#articles") -->
+  <!--   articles.find(".article").each(function(index, article) { -->
+  <!--     var articleId = article.id -->
+  <!--     var article = $(article) -->
+  <!--     var likeBtnTag = article.find("a.likeBtn") -->
+  <!--     var unlikeBtnTag = article.find("a.unlikeBtn") -->
+  <!--     var commentsBtnTag = article.find("a.commentsBtn") -->
+  <!--     var commentsTag = article.find("div.comments") -->
+
+  <!--     likeBtnTag.click(function() { -->
+  <!--       likeTag.attr('style', 'display: none') -->
+  <!--       unlikeTag.attr('style', '') -->
+  <!--       $.post('@routes.Board.like("")' + articleId) -->
+  <!--       return false -->
+  <!--     }) -->
+  <!--     unlikeBtnTag.click(function() { -->
+  <!--       unlikeTag.attr('style', 'display: none') -->
+  <!--       likeTag.attr('style', '') -->
+  <!--       $.post('@routes.Board.unlike("")' + articleId) -->
+  <!--       return false -->
+  <!--     }) -->
+  <!--     commentsBtnTag.click(function() { -->
+  <!--       commentsBtnTag.remove() -->
+
+  <!--       commentsTag.attr('style', '') -->
+  <!--       $.get('@routes.Board.comments("")' + articleId, function(data) { -->
+  <!--         console.log(data) -->
+  <!--       }) -->
+
+  <!--       return false -->
+  <!--     }) -->
+  <!--   }) -->
+  <!-- </script> -->
+
   <script type="text/javascript" src='@routes.Assets.at("phpspellcheck/include.js")'></script>
   <script type="text/javascript">
     var mySpell = new LiveSpellInstance()

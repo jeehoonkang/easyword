@@ -5,17 +5,23 @@
 
 GET     /assets/phpspellcheck/core/ controllers.SpellCheck.spellcheck()
 
-GET     /                           controllers.Board.index()
-POST    /article/submit             controllers.Board.submit()
-POST    /article/submitComment/:id  controllers.Board.submitComment(id: Int)
-POST    /article/like/:articleId    controllers.Board.like(articleId)
-POST    /article/unlike/:articleId  controllers.Board.unlike(articleId)
+GET     /                                 controllers.Board.index()
 
-GET     /auth/login                 controllers.Auth.login
-POST    /auth/login                 controllers.Auth.authenticate
-POST    /auth/register              controllers.Auth.register
-GET     /auth/logout                controllers.Auth.logout
+POST    /board/article/create             controllers.Board.create()
+GET     /board/article/list               controllers.Board.articles(skip: Int = 0, limit: Int = 20)
+GET     /board/article/list/:skip         controllers.Board.articles(skip: Int, limit: Int = 20)
+GET     /board/article/list/:skip/:limit  controllers.Board.articles(skip: Int, limit: Int)
+POST    /board/article/like/:articleId    controllers.Board.like(articleId)
+POST    /board/article/unlike/:articleId  controllers.Board.unlike(articleId)
+
+POST    /board/comment/create/:articleId  controllers.Board.createComment(articleId: Int)
+GET     /board/comment/list/:articleId    controllers.Board.comments(articleId)
+
+GET     /auth/login                       controllers.Auth.login
+POST    /auth/login                       controllers.Auth.authenticate
+POST    /auth/register                    controllers.Auth.register
+GET     /auth/logout                      controllers.Auth.logout
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
-GET     /webjars/*file              controllers.WebJarAssets.at(file)
+GET     /assets/*file                     controllers.Assets.at(path="/public", file)
+GET     /webjars/*file                    controllers.WebJarAssets.at(file)
