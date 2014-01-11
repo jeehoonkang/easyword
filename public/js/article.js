@@ -18,13 +18,17 @@ function ArticleCtrl($scope) {
   $scope.like = function(article) {
     article.likeStyle = "display: none"
     article.unlikeStyle = ""
-    $.post('board/article/like/' + article.id)
+    $.post('board/article/like/' + article.id, function() {
+      // TODO
+    })
   };
 
   $scope.unlike = function(article) {
     article.unlikeStyle = "display: none"
     article.likeStyle = ""
-    $.post('board/article/unlike/' + article.id)
+    $.post('board/article/unlike/' + article.id, function() {
+      // TODO
+    })
   };
 
   $scope.getComments = function(article) {
