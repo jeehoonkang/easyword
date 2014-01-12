@@ -66,7 +66,9 @@ object Auth extends Controller {
       },
       register => {
         User.create(User(register._1, register._2), register._3)
-        Redirect(routes.Board.index).withSession(Security.username -> register._1)
+        Redirect(routes.Board.index)
+          .withSession(Security.username -> register._1)
+          .flashing("success" -> "백일장에 참여하러 오신 여러분을 환영합니다. 글도 남기고, 댓글도 남기고, 좋아요도 눌러보세요!")
       }
     )
   }
