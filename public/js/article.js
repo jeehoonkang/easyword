@@ -84,7 +84,7 @@ function ArticleCtrl($scope) {
                renderComments(article, comments)
 
                $(event.target).removeAttr('disabled')
-               $(event.target).val('')
+               article.newComment = ""
                if (!$scope.$$phase) $scope.$apply()
              })
       $(event.target).attr('disabled', 'disabled')
