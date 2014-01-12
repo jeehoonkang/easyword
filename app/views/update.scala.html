@@ -1,0 +1,57 @@
+@(articleId: String, articleForm: Form[String])(implicit req: RequestHeader, session: Session, flash: Flash)
+
+@main("글 바꾸기") {
+  <div class="row-fluid">
+    <div class="span3"></div>
+    <div class="span6 well">
+      @flash.get("success").map { info =>
+      <p class="text-success">
+        @info
+      </p>
+      }
+      @flash.get("error").map { error =>
+      <p class="text-error">
+        @error
+      </p>
+      }
+      <p><a href='@routes.Assets.at("words/words.txt")'>가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써요.</p>
+      @helper.form(routes.Board.update(articleId)) {
+      @helper.CSRF.formField
+      <textarea id="text" name="text" rows="10" style="width: 95%; resize: none">@articleForm("text").value</textarea>
+      <p><button id="submit" class="btn btn-primary">바꾸기</button>&nbsp;<span id="message"></span></p>
+      <input id="count" style="display: none"></input>
+      }
+    </div>
+    <div class="span3"></div>
+  </div>
+
+  <script type="text/javascript" src='@routes.Assets.at("js/article.js")'></script>
+
+  <script type="text/javascript" src='@routes.Assets.at("phpspellcheck/include.js")'></script>
+  <script type="text/javascript">
+    var mySpell = new LiveSpellInstance()
+    mySpell.Fields = "text"
+    mySpell.CaseSensitive = false
+    mySpell.IgnoreAllCaps = false
+    mySpell.IgnoreNumeric = false
+    mySpell.CheckGrammar = false
+    mySpell.ShowMeanings = false
+    mySpell.ShowSummaryScreen = false
+    mySpell.ActivateAsYouType()
+  </script>
+
+  <script type="text/javascript">
+    var textTag = $('#text');
+    var countTag = $('#count');
+    
+    function enableButton() {
+      if ((textTag.val() != "" && textTag.val() != "\n") && countTag.val() == "0") {
+        $('#submit').removeAttr('disabled');
+      } else {
+        $('#submit').attr('disabled', 'disabled');
+      }
+    };
+
+    enableButton();
+  </script>
+}

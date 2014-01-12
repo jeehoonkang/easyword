@@ -48,16 +48,50 @@ object Board extends Controller with Secured {
     Ok(views.html.index(articleForm))
   }
 
+  def updateGet(id: String) = withUser { case (userId, user) => implicit request =>
+    val articleId = new ObjectId(id)
+    val article = Article.findById(articleId)
+    article match {
+      case None => BadRequest("")
+      case Some(article) =>
+        Ok(views.html.update(id, articleForm.fill(article.content)))
+    }
+  }
+
   def create = withUser { case (userId, user) => implicit request =>
     articleForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.index(formWithErrors)),
+      formWithErrors => BadRequest(""),
       content => {
         Article.create(Article(userId, content, new DateTime()))
         Redirect(routes.Board.index).flashing(
-          "success" -> "글을 저장했어요!"
+          "success" -> "글을 썼어요!"
         )
       }
     )
+  }
+
+  def update(id: String) = withUser { case (userId, user) => implicit request =>
+    val articleId = new ObjectId(id)
+    val article = Article.findById(articleId)
+    article match {
+      case None => BadRequest("")
+      case Some(article) => {
+        if (article.authorId != userId) {
+          BadRequest("")
+        }
+        else {
+          articleForm.bindFromRequest.fold(
+            formWithErrors => BadRequest(""),
+            content => {
+              Article.update(articleId, Article(article.authorId, content, article.created))
+              Redirect(routes.Board.index).flashing(
+                "success" -> "글을 바꿨어요!"
+              )
+            }
+          )
+        }
+      }
+    }
   }
 
   def createComment(authorId: String) = withUser { case (userId, user) => implicit request =>

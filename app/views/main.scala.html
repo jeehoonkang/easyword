@@ -67,6 +67,10 @@
     </style>
   </head>
   <body>
+    @session.get(Security.username).map { username =>
+      <input id="userId" type="hidden" value="@{username}" />
+    }.getOrElse {
+    }
     <div id="wrap">
       <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">

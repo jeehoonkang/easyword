@@ -59,6 +59,19 @@ object Article {
     obj.getAs[ObjectId]("_id")
   }
 
+  def update(articleId: ObjectId, article: Article): Boolean = {
+    val obj = MongoDBObject(
+      "authorId" -> article.authorId,
+      "content" -> article.content,
+      "created" -> article.created
+    )
+    val result = collection.update(
+      MongoDBObject("_id" -> articleId),
+      obj
+    )
+    result.getN > 0
+  }
+
   def numLikes(articleId: ObjectId): Int = {
     likeCollection.find(MongoDBObject("articleId" -> articleId)).count
   }

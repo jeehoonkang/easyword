@@ -3,14 +3,14 @@
 # ~~~~
 
 
-GET     /assets/phpspellcheck/core/ controllers.SpellCheck.spellcheck()
-
 GET     /                                 controllers.Board.index()
+GET     /board/article/update/:articleId  controllers.Board.updateGet(articleId)
 
-POST    /board/article/create             controllers.Board.create()
 GET     /board/article/list               controllers.Board.articles(skip: Long = 0, limit: Long = 20)
 GET     /board/article/list/:skip         controllers.Board.articles(skip: Long, limit: Long = 20)
 GET     /board/article/list/:skip/:limit  controllers.Board.articles(skip: Long, limit: Long)
+POST    /board/article/create             controllers.Board.create()
+POST    /board/article/update/:articleId  controllers.Board.update(articleId)
 POST    /board/article/like/:articleId    controllers.Board.like(articleId)
 POST    /board/article/unlike/:articleId  controllers.Board.unlike(articleId)
 
@@ -23,5 +23,6 @@ POST    /auth/register                    controllers.Auth.register
 GET     /auth/logout                      controllers.Auth.logout
 
 # Map static resources from the /public folder to the /assets URL path
+GET     /assets/phpspellcheck/core/       controllers.SpellCheck.spellcheck()
 GET     /assets/*file                     controllers.Assets.at(path="/public", file)
 GET     /webjars/*file                    controllers.WebJarAssets.at(file)

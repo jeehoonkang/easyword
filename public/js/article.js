@@ -5,6 +5,7 @@ function ArticleCtrl($scope) {
     if (article.comments == undefined) article.comments = []
     if (article.newComment == undefined) article.newComment = ""
     if (article.getCommentsStyle == undefined) article.getCommentsStyle = article.numComments == 0 ? "display: none" : ""
+    if (article.updateStyle == undefined) article.updateStyle = (article.authorEmail == $('#userId').val()) ? "" : "display: none"
 
     if (article.likeStyle == undefined) article.likeStyle = article.liked ? "display: none" : ""
     if (article.unlikeStyle == undefined) article.unlikeStyle = article.liked ? "" : "display: none"
