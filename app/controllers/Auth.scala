@@ -91,8 +91,8 @@ trait Secured {
   }
 
   def withUser(f: (ObjectId, User) => Request[AnyContent] => Result) = withAuth { username => implicit request =>
-    User.findUserByEmail(username).map { case (userid, user) =>
-      f(userid, user)(request)
+    User.findUserByEmail(username).map { case (userId, user) =>
+      f(userId, user)(request)
     }.getOrElse(onUnauthorized(request))
   }
 }

@@ -23,11 +23,18 @@ object Article {
   val collection = db("article")
   val likeCollection = db("like")
   RegisterJodaTimeConversionHelpers()
-
+  
   private def fromObject(obj: MongoDBObject): Option[(ObjectId, Article)] = {
     (obj.getAs[ObjectId]("_id"), obj.getAs[ObjectId]("authorId"), obj.getAs[String]("content"), obj.getAs[DateTime]("created")) match {
       case (Some(id), Some(authorId), Some(content), Some(created)) => Some((id, Article(authorId, content, created)))
       case _ => None
+    }
+  }
+
+  def findById(id: ObjectId): Option[Article] = {
+    collection.findOne(MongoDBObject("_id" -> id)) match {
+      case None => None
+      case Some(obj) => fromObject(obj) map { case (_, article) => article }
     }
   }
 
@@ -50,6 +57,14 @@ object Article {
     )
     collection.insert(obj)
     obj.getAs[ObjectId]("_id")
+  }
+
+  def numLikes(articleId: ObjectId): Int = {
+    likeCollection.find(MongoDBObject("articleId" -> articleId)).count
+  }
+
+  def liked(userId: ObjectId, articleId: ObjectId): Boolean = {
+    likeCollection.findOne(MongoDBObject("userId" -> userId, "articleId" -> articleId)).isDefined
   }
 
   def like(articleId: ObjectId, userId: ObjectId) {

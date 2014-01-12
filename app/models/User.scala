@@ -32,7 +32,14 @@ object User {
       case Some(obj) => fromObject(obj)
     }
   }
-  
+
+  def findById(id: ObjectId): Option[User] = {
+    collection.findOne(MongoDBObject("_id" -> id)) match {
+      case None => None
+      case Some(obj) => fromObject(obj) map { case (_, user, _) => user }
+    }
+  }
+
   def findUserByEmail(email: String): Option[(ObjectId, User)] = {
     findByEmail(email) map { case (id, user, _) =>
       (id, user)

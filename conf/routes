@@ -8,13 +8,13 @@ GET     /assets/phpspellcheck/core/ controllers.SpellCheck.spellcheck()
 GET     /                                 controllers.Board.index()
 
 POST    /board/article/create             controllers.Board.create()
-GET     /board/article/list               controllers.Board.articles(skip: Int = 0, limit: Int = 20)
-GET     /board/article/list/:skip         controllers.Board.articles(skip: Int, limit: Int = 20)
-GET     /board/article/list/:skip/:limit  controllers.Board.articles(skip: Int, limit: Int)
+GET     /board/article/list               controllers.Board.articles(skip: Long = 0, limit: Long = 20)
+GET     /board/article/list/:skip         controllers.Board.articles(skip: Long, limit: Long = 20)
+GET     /board/article/list/:skip/:limit  controllers.Board.articles(skip: Long, limit: Long)
 POST    /board/article/like/:articleId    controllers.Board.like(articleId)
 POST    /board/article/unlike/:articleId  controllers.Board.unlike(articleId)
 
-POST    /board/comment/create/:articleId  controllers.Board.createComment(articleId: Int)
+POST    /board/comment/create/:articleId  controllers.Board.createComment(articleId)
 GET     /board/comment/list/:articleId    controllers.Board.comments(articleId)
 
 GET     /auth/login                       controllers.Auth.login

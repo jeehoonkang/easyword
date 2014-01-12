@@ -41,10 +41,14 @@ object Comment {
     buffer.result()
   }
 
+  def numComments(articleId: ObjectId): Int = {
+    collection.find(MongoDBObject("articleId" -> articleId)).count
+  }
+
   def create(comment: Comment): Option[ObjectId] = {
     val obj = MongoDBObject(
       "authorId" -> comment.authorId,
-      "commentId" -> comment.articleId,
+      "articleId" -> comment.articleId,
       "content" -> comment.content,
       "created" -> comment.created
     )

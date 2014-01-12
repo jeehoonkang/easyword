@@ -20,7 +20,7 @@ import scala.concurrent.Future
 
 import com.typesafe.plugin._
 
-object SpellCheck extends Controller with Secured {
+object SpellCheck extends Controller {
   val ma = new MorphemeAnalyzer()
   val words: Set[String] = scala.io.Source.fromFile("public/words/words.txt").getLines.foldLeft(Set[String]())(_ + _)
 
@@ -67,7 +67,6 @@ object SpellCheck extends Controller with Secured {
                   morpheme.getTag()(0) != 'S' &&
                   !words.contains(morpheme.asInstanceOf[Token].getString())
               ) {
-                println("fail: " + morpheme.asInstanceOf[Token].getString())
                 return false
               }
 

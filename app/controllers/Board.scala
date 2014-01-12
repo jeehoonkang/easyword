@@ -24,6 +24,18 @@ import models._
 import com.mongodb.casbah.Imports._
 
 object Board extends Controller with Secured {
+  implicit val objectIdReads = new Reads[ObjectId] {
+    def reads(json: JsValue): JsResult[ObjectId] = {
+      JsSuccess(new ObjectId(json.as[String]))
+    }
+  }
+
+  implicit val objectIdWrites = new Writes[ObjectId] {
+    def writes(id: ObjectId): JsValue = {
+      Json.toJson(id.toString)
+    }
+  }
+
   val articleForm = Form(
     "text" -> text.verifying ("어려운 말이 들어있어요.", text => text.split("\\s").forall(SpellCheck.spellcheckLookup(_)))
   )
@@ -32,64 +44,114 @@ object Board extends Controller with Secured {
     "text" -> text
   )
 
-  def index = withUser { case (userid, user) => implicit request =>
+  def index = withUser { case (userId, user) => implicit request =>
     Ok(views.html.index(articleForm))
   }
 
-  def create = withUser { case (userid, user) => implicit request =>
+  def create = withUser { case (userId, user) => implicit request =>
     articleForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.index(formWithErrors)),
       content => {
-        Article.create(Article(userid, content, new DateTime()))
+        Article.create(Article(userId, content, new DateTime()))
         Redirect(routes.Board.index).flashing(
           "success" -> "글을 저장했어요!"
         )
-        // val mail = use[MailerPlugin].email
-        // mail.setSubject("Easyword from " + user.name + " (" + user.email +  ")")
-        // mail.addRecipient("EasyWord <easyword@jeehoon.me>","easyword@jeehoon.me")
-        // mail.addFrom("EasyWord <easyword@jeehoon.me>")
-        // mail.send("author: " + user.name + " (" + user.email +  ")" + "\ncontent:\n" + content)
       }
     )
   }
 
-  def createComment(id: Int) = withUser { case (userid, user) => implicit request =>
-    // TODO
-    Ok(views.html.index(articleForm))
+  def createComment(authorId: String) = withUser { case (userId, user) => implicit request =>
+    println("hi")
+    commentForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(""),
+      content => {
+        Comment.create(Comment(
+          userId,
+          new ObjectId(authorId),
+          content,
+          new DateTime()
+        ))
+        Redirect(routes.Board.comments(authorId))
+      }
+    )
   }
 
-  def articles(skip: Int, limit: Int) = withUser { case (userid, user) => implicit request =>
+  def articleToClient(articleId: ObjectId, article: Article, userId: ObjectId): JsValue = {
+    val authorOpt = User.findById(article.authorId)
+    val (authorEmail, authorName) = authorOpt match {
+      case None => ("", "") // TODO
+      case Some(author) => (author.email, author.name)
+    }
+
+    val numLikes = Article.numLikes(articleId)
+    val numComments = Comment.numComments(articleId)
+    val liked = Article.liked(userId, articleId)
+
+    Json.toJson(Map(
+      "id" -> Json.toJson(articleId),
+      "content" -> Json.toJson(article.content),
+
+      "authorEmail" -> Json.toJson(authorEmail),
+      "authorName" -> Json.toJson(authorName),
+      "authorId" -> Json.toJson(article.authorId),
+
+      "created" -> Json.toJson(article.created),
+
+      "numLikes" -> Json.toJson(numLikes),
+      "numComments" -> Json.toJson(numComments),
+      "liked" -> Json.toJson(liked)
+    ))
+  }
+
+  def commentToClient(commentId: ObjectId, comment: Comment): JsValue = {
+    val authorOpt = User.findById(comment.authorId)
+    val (authorEmail, authorName) = authorOpt match {
+      case None => ("", "") // TODO
+      case Some(author) => (author.email, author.name)
+    }
+
+    Json.toJson(Map(
+      "id" -> Json.toJson(commentId),
+      "content" -> Json.toJson(comment.content),
+
+      "authorEmail" -> Json.toJson(authorEmail),
+      "authorName" -> Json.toJson(authorName),
+      "authorId" -> Json.toJson(comment.authorId),
+
+      "created" -> Json.toJson(comment.created)
+    ))
+  }
+
+  def articles(skip: Long, limit: Long) = withUser { case (userId, user) => implicit request =>
     val reducedLimit = if (limit > 20) 20 else limit
-    val articles = Article.findArticles(skip, reducedLimit)
-    Ok(articles.toString) // TODO
-
-    // {id: '1234',
-    //  content: '안녕하세요\n안녕하세요',
-
-    //  authorEmail: 'jeehoon@jeehoon.me',
-    //  authorName: '강지훈',
-    //  authorId: "123",
-
-    //  created: "created-value",
-
-    //  numLikes: 10,
-    //  numComments: 10,
-    //  liked: true
-    // }
+    val articles = Article.findArticles(skip.asInstanceOf[Int], reducedLimit.asInstanceOf[Int])
+    val result = articles.map { case (articleId, article) => articleToClient(articleId, article, userId) }
+    Ok(Json.toJson(result))
   }
 
-  def comments(articleId: String) = withUser { case (userid, user) => implicit request =>
-    Comment.findCommentByArticle(new ObjectId(articleId))
-    Ok("") // TODO
+  def comments(articleId: String) = withUser { case (userId, user) => implicit request =>
+    val comments = Comment.findCommentByArticle(new ObjectId(articleId))
+    val result = comments.map { case (commentId, comment) => commentToClient(commentId, comment) }
+    Ok(Json.toJson(result))
   }
 
-  def like(articleId: String) = withUser { case (userid, user) => implicit request =>
-    Article.like(new ObjectId(articleId), userid);
-    Ok("")
+  def like(id: String) = withUser { case (userId, user) => implicit request =>
+    val articleId = new ObjectId(id)
+    Article.like(articleId, userId)
+    Article.findById(articleId) map { article =>
+      Ok(articleToClient(articleId, article, userId))
+    } getOrElse {
+      BadRequest("")
+    }
   }
 
-  def unlike(articleId: String) = withUser { case (userid, user) => implicit request =>
-    Article.unlike(new ObjectId(articleId), userid);
-    Ok("")
+  def unlike(id: String) = withUser { case (userId, user) => implicit request =>
+    val articleId = new ObjectId(id)
+    Article.unlike(articleId, userId)
+    Article.findById(articleId) map { article =>
+      Ok(articleToClient(articleId, article, userId))
+    } getOrElse {
+      BadRequest("")
+    }
   }
 }
