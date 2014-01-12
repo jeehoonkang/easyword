@@ -14,7 +14,7 @@
         @error
       </p>
       }
-      <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href='@routes.WebJarAssets.at("words/words.txt")'>가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써봐요.</p>
+      <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href='@routes.Assets.at("words/words.txt")'>가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써봐요.</p>
       @helper.form(routes.Board.create) {
       <textarea id="text" name="text" rows="10" style="width: 95%; resize: none">어려운 말을 쓰면 이렇게 밑줄이 생겨요.</textarea>
       <p><button id="submit" class="btn btn-primary">쓰기</button>&nbsp;<span id="message"></span></p>

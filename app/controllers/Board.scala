@@ -61,7 +61,6 @@ object Board extends Controller with Secured {
   }
 
   def createComment(authorId: String) = withUser { case (userId, user) => implicit request =>
-    println("hi")
     commentForm.bindFromRequest.fold(
       formWithErrors => BadRequest(""),
       content => {
