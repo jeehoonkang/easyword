@@ -74,7 +74,7 @@
             <a id="titleLink" class="brand" href='@routes.Board.index()'>2014 소프트웨어 무결점 백일장</a>
             @session.get(Security.username).map { username =>
               <ul class="nav pull-right">
-                <li class="navbar-text">강지훈님, 환영합니다!</li>
+                <li class="navbar-text">@{username}</li>
                 <li><a href='@routes.Auth.logout'>로그아웃</a></li>
               </ul>
             }.getOrElse {

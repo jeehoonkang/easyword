@@ -18,6 +18,7 @@
   </div>
   <div class="span4">
     @helper.form(routes.Auth.register) {
+    @helper.CSRF.formField
     <p><button class="btn btn-primary" type="submit" id="register_loginbutton">회원가입</button></p>
     @registerForm.globalError.map { error =>
     <p class="text-error">
@@ -35,6 +36,7 @@
   </div>
   <div class="span4">
     @helper.form(routes.Auth.authenticate) {
+    @helper.CSRF.formField
     <p>
       <button class="btn btn-primary" type="submit" id="loginbutton">로그인</button>
     </p>
