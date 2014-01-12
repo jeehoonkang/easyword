@@ -1,4 +1,4 @@
-@(title: String)(content: Html)(implicit req: RequestHeader)
+@(title: String)(content: Html)(implicit req: RequestHeader, session: Session)
 
 <!DOCTYPE html>
 <html ng-app>
@@ -70,11 +70,15 @@
     <div id="wrap">
       <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
-          <div id="fork-me">
-            <a href="https://github.com/lunaticas/easyword/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
-          </div>
           <div class="container-fluid">
             <a id="titleLink" class="brand" href='@routes.Board.index()'>2014 소프트웨어 무결점 백일장</a>
+            @session.get(Security.username).map { username =>
+              <ul class="nav pull-right">
+                <li class="navbar-text">강지훈님, 환영합니다!</li>
+                <li><a href='@routes.Auth.logout'>로그아웃</a></li>
+              </ul>
+            }.getOrElse {
+            }
           </div>
         </div>
       </div>
@@ -85,7 +89,7 @@
     </div>
     <div id="footer">
       <div class="container">
-        <p class="muted credit"><a href="http://jeehoon.me">강지훈</a>이 만듬 / 2014년 1월 12일 고침</p>
+        <p class="muted credit"><a href="http://jeehoon.me">강지훈</a>이 만듬 | 2014년 1월 13일 고침 | <a href="https://github.com/lunaticas/easyword/">GitHub repository</a></p>
       </div>
     </div>
     <script>

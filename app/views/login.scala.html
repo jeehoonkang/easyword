@@ -1,4 +1,4 @@
-@(registerForm: Form[(String,String,String,String,String)], form: Form[(String,String)])(implicit req: RequestHeader, flash: Flash)
+@(registerForm: Form[(String,String,String,String,String)], form: Form[(String,String)])(implicit req: RequestHeader, session: Session, flash: Flash)
 
 @main("로그인") {
   <div class="hero-unit">
