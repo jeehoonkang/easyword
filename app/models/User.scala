@@ -54,7 +54,7 @@ object User {
         else None
     }
   }
-  
+
   def create(user: User, password: String): Boolean = {
     findByEmail(user.email) match {
       case None =>
@@ -65,5 +65,15 @@ object User {
         true
       case Some(_) => false
     }
+  }
+
+  def update(id: ObjectId, user: User, password: String): Boolean = {
+    val result = collection.update(
+      MongoDBObject("_id" -> id),
+      MongoDBObject(
+        "email" -> user.email,
+        "name" -> user.name,
+        "password" -> BCrypt.hashpw(password, BCrypt.gensalt(12))))
+    result.getN > 0
   }
 }

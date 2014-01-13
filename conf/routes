@@ -3,12 +3,12 @@
 # ~~~~
 
 
-GET     /                                 controllers.Board.index()
+GET     /                                 controllers.Board.index
 GET     /board/article/update/:articleId  controllers.Board.updateGet(articleId)
 
-GET     /board/article/refresh            controllers.Board.refresh()
-GET     /board/article/getMoreArticles    controllers.Board.getMoreArticles()
-POST    /board/article/create             controllers.Board.create()
+GET     /board/article/refresh            controllers.Board.refresh
+GET     /board/article/getMoreArticles    controllers.Board.getMoreArticles
+POST    /board/article/create             controllers.Board.create
 POST    /board/article/update/:articleId  controllers.Board.update(articleId)
 POST    /board/article/like/:articleId    controllers.Board.like(articleId)
 POST    /board/article/unlike/:articleId  controllers.Board.unlike(articleId)
@@ -16,12 +16,15 @@ POST    /board/article/unlike/:articleId  controllers.Board.unlike(articleId)
 POST    /board/comment/create/:articleId  controllers.Board.createComment(articleId)
 GET     /board/comment/list/:articleId    controllers.Board.comments(articleId)
 
+GET     /auth/modifyGet                   controllers.Auth.modifyGet
+
 GET     /auth/login                       controllers.Auth.login
 POST    /auth/login                       controllers.Auth.authenticate
 POST    /auth/register                    controllers.Auth.register
+POST    /auth/modify                      controllers.Auth.modify
 GET     /auth/logout                      controllers.Auth.logout
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/phpspellcheck/core/       controllers.SpellCheck.spellcheck()
+GET     /assets/phpspellcheck/core/       controllers.SpellCheck.spellcheck
 GET     /assets/*file                     controllers.Assets.at(path="/public", file)
 GET     /webjars/*file                    controllers.WebJarAssets.at(file)

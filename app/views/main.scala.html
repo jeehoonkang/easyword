@@ -79,6 +79,7 @@
             @session.get(Security.username).map { username =>
               <ul class="nav pull-right">
                 <li class="navbar-text">@{username}</li>
+                <li><a href='@routes.Auth.modifyGet'>개인정보 바꾸기</a></li>
                 <li><a href='@routes.Auth.logout'>로그아웃</a></li>
               </ul>
             }.getOrElse {

@@ -1,0 +1,28 @@
+@(modifyForm: Form[(String, String, String, String)])(implicit req: RequestHeader, session: Session, flash: Flash)
+
+@main("개인정보 바꾸기") {
+  <div class="row-fluid">
+    <div class="span3"></div>
+    <div class="span6 well">
+      @flash.get("success").map { info =>
+      <p class="text-success">
+        @info
+      </p>
+      }
+      @flash.get("error").map { error =>
+      <p class="text-error">
+        @error
+      </p>
+      }
+      @helper.form(routes.Auth.modify) {
+      @helper.CSRF.formField
+      <input type="text" name="modify_name" placeholder="이름" id="modify_name" value="@modifyForm("modify_name").value"><br />
+      <input type="password" name="modify_password_original" id="modify_password" placeholder="원래 패스워드"><br />
+      <input type="password" name="modify_password" id="modify_password" placeholder="새 패스워드"><br />
+      <input type="password" name="modify_password_repeat" id="modify_password_repeat" placeholder="새 패스워드 반복"><br />
+      <p><button id="submit" class="btn btn-primary">바꾸기</button></p>
+      }
+    </div>
+    <div class="span3"></div>
+  </div>
+}

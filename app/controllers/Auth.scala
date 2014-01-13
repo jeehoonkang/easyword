@@ -66,6 +66,23 @@ object Auth extends Controller with Secured {
     })
   )
 
+  def modifyForm(email: String) = Form(
+    tuple(
+      "modify_name" -> text,
+      "modify_password_original" -> text,
+      "modify_password" -> text,
+      "modify_password_repeat" -> text
+    ) verifying ("이름이 없어요.", result => result match {
+      case (name, _, _, _) => name != ""
+    }) verifying ("패스워드가 달라요.", result => result match {
+      case (_, _, password, password_repeat) => password == password_repeat
+    }) verifying ("패스워드가 없어요.", result => result match {
+      case (_, _, password, _) => password != ""
+    }) verifying ("패스워드가 틀려요.", result => result match {
+      case (_, password_original, _, _) => User.authenticate(email, password_original).isDefined
+    })
+  )
+
   def login = Action { implicit request =>
     username(request) match {
       case None => Ok(views.html.login(registerForm, loginForm))
@@ -80,10 +97,28 @@ object Auth extends Controller with Secured {
     )
   }
 
+  def modifyGet = withUser { case (userId, user) => implicit request =>
+    Ok(views.html.modify(modifyForm(user.email).fill(user.name, "", "", "")))
+  }
+
+  def modify = withUser { case (userId, user) => implicit request =>
+    modifyForm(user.email).bindFromRequest.fold(
+      formWithErrors => BadRequest(views.html.modify(formWithErrors)),
+      modify => {
+        if (User.update(userId, User(user.email, modify._1), modify._3)) {
+          Redirect(routes.Board.index)
+            .flashing("success" -> "개인 정보를 바꿨어요!")
+        }
+        else {
+          BadRequest("")
+        }
+      }
+    )
+  }
+
   def register = Action { implicit request =>
     registerForm.bindFromRequest.fold(
       formWithErrors => {
-        println(formWithErrors);
         BadRequest(views.html.login(formWithErrors, loginForm))
       },
       register => {
