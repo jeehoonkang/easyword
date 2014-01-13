@@ -13,7 +13,26 @@ import scala.concurrent.Future
 import models._
 import com.mongodb.casbah.Imports._
 
-object Auth extends Controller {  
+trait Secured {
+
+  def username(request: RequestHeader) = request.session.get(Security.username)
+
+  def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Auth.login)
+
+  def withAuth(f: => String => Request[AnyContent] => Result) = {
+    Security.Authenticated(username, onUnauthorized) { user =>
+      Action(request => f(user)(request))
+    }
+  }
+
+  def withUser(f: (ObjectId, User) => Request[AnyContent] => Result) = withAuth { username => implicit request =>
+    User.findUserByEmail(username).map { case (userId, user) =>
+      f(userId, user)(request)
+    }.getOrElse(onUnauthorized(request))
+  }
+}
+
+object Auth extends Controller with Secured {
   val loginForm = Form(
     tuple(
       "email" -> text,
@@ -48,7 +67,10 @@ object Auth extends Controller {
   )
 
   def login = Action { implicit request =>
-    Ok(views.html.login(registerForm, loginForm))
+    username(request) match {
+      case None => Ok(views.html.login(registerForm, loginForm))
+      case Some(_) => Redirect(routes.Board.index())
+    }
   }
 
   def authenticate = Action { implicit request =>
@@ -77,24 +99,5 @@ object Auth extends Controller {
     Redirect(routes.Auth.login).withNewSession.flashing(
       "success" -> "로그아웃 했어요."
     )
-  }
-}
-
-trait Secured {
-
-  def username(request: RequestHeader) = request.session.get(Security.username)
-
-  def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Auth.login)
-
-  def withAuth(f: => String => Request[AnyContent] => Result) = {
-    Security.Authenticated(username, onUnauthorized) { user =>
-      Action(request => f(user)(request))
-    }
-  }
-
-  def withUser(f: (ObjectId, User) => Request[AnyContent] => Result) = withAuth { username => implicit request =>
-    User.findUserByEmail(username).map { case (userId, user) =>
-      f(userId, user)(request)
-    }.getOrElse(onUnauthorized(request))
   }
 }

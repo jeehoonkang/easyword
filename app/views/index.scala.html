@@ -34,7 +34,7 @@
         <ul class="unstyled">
           <li ng-repeat="article in articles" class="well">
             <p>
-              <strong><a href="mailto:{{article.authorEmail}}">{{article.authorName}}</a></strong>
+              <strong>{{article.authorName}}</strong>
               {{article.content}}
             </p>
             <p style="font-size: 13px">
@@ -50,7 +50,7 @@
               <ul class="comments">
                 <li ng-repeat="comment in article.comments">
                   <p style="font-size: 13px">
-                    <strong><a href="mailto:{{comment.authorEmail}}">{{comment.authorName}}</a></strong>
+                    <strong>{{comment.authorName}}</strong>
                     {{comment.content}}
                   </p>
                 </li>
