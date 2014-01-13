@@ -44,6 +44,10 @@ object Board extends Controller with Secured {
     "text" -> text
   )
 
+  val getMoreArticlesForm = Form(
+    "created" -> text
+  )
+
   def index = withUser { case (userId, user) => implicit request =>
     Ok(views.html.index(articleForm))
   }
@@ -155,11 +159,28 @@ object Board extends Controller with Secured {
     ))
   }
 
-  def articles(skip: Long, limit: Long) = withUser { case (userId, user) => implicit request =>
-    val reducedLimit = if (limit > 20) 20 else limit
-    val articles = Article.findArticles(skip.asInstanceOf[Int], reducedLimit.asInstanceOf[Int])
-    val result = articles.map { case (articleId, article) => articleToClient(articleId, article, userId) }
-    Ok(Json.toJson(result))
+  def refresh() = withUser { case (userId, user) => implicit request =>
+    getMoreArticlesForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(""),
+      data => {
+        val created = new DateTime(data.toLong)
+        val articles = Article.findArticlesAfter(created)
+        val result = articles.map { case (articleId, article) => articleToClient(articleId, article, userId) }
+        Ok(Json.toJson(result))
+      }
+    )
+  }
+
+  def getMoreArticles() = withUser { case (userId, user) => implicit request =>
+    getMoreArticlesForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(""),
+      data => {
+        val created = new DateTime(data.toLong)
+        val articles = Article.findArticlesBefore(created)
+        val result = articles.map { case (articleId, article) => articleToClient(articleId, article, userId) }
+        Ok(Json.toJson(result))
+      }
+    )
   }
 
   def comments(articleId: String) = withUser { case (userId, user) => implicit request =>

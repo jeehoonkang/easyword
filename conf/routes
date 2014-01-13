@@ -6,9 +6,8 @@
 GET     /                                 controllers.Board.index()
 GET     /board/article/update/:articleId  controllers.Board.updateGet(articleId)
 
-GET     /board/article/list               controllers.Board.articles(skip: Long = 0, limit: Long = 20)
-GET     /board/article/list/:skip         controllers.Board.articles(skip: Long, limit: Long = 20)
-GET     /board/article/list/:skip/:limit  controllers.Board.articles(skip: Long, limit: Long)
+GET     /board/article/refresh            controllers.Board.refresh()
+GET     /board/article/getMoreArticles    controllers.Board.getMoreArticles()
 POST    /board/article/create             controllers.Board.create()
 POST    /board/article/update/:articleId  controllers.Board.update(articleId)
 POST    /board/article/like/:articleId    controllers.Board.like(articleId)

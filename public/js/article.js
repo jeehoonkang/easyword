@@ -1,6 +1,9 @@
 function ArticleCtrl($scope) {
   $scope.articles = []
 
+  $scope.getMoreArticlesStyle = ""
+  $scope.lastArticleStyle = "display: none"
+
   function preprocess(article) {
     if (article.comments == undefined) article.comments = []
     if (article.newComment == undefined) article.newComment = ""
@@ -11,21 +14,55 @@ function ArticleCtrl($scope) {
     if (article.unlikeStyle == undefined) article.unlikeStyle = article.liked ? "" : "display: none"
   }
 
+  var ids = {}
+  var minCreated = 2000000000000
+  var maxCreated = 0
+
+  $scope.refresh = function() {
+    $.get('board/article/refresh',
+          {created: maxCreated},
+          function(articles) {
+            var uniqs = []
+            $.each(articles, function(index, article) {
+              if (!(article.id in ids)) {
+                ids[article.id] = true
+                if (maxCreated < article.created) maxCreated = article.created
+                if (minCreated > article.created) minCreated = article.created
+                preprocess(article)
+                uniqs.push(article)
+              }
+            })
+            $scope.articles = uniqs.concat($scope.articles)
+
+            $.each($scope.articles, function(index, article) {
+              article.index = index
+            })
+            if (!$scope.$$phase) $scope.$apply()
+          })
+  }
+
   $scope.getMoreArticles = function() {
-    var url = 'board/article/list'
-    if ($scope.articles != []) {
-      // TODO
-    }
-
-    $.get(url, function(articles) {
-      $.each(articles, function(index, article) {
-        preprocess(article)
-
-        article.index = $scope.articles.length
-        $scope.articles.push(article)
-        if (!$scope.$$phase) $scope.$apply()
-      })
-    })
+    $.get('board/article/getMoreArticles',
+          {created: minCreated},
+          function(articles) {
+            var delta = false
+            $.each(articles, function(index, article) {
+              if (!(article.id in ids)) {
+                delta = true
+                ids[article.id] = true
+                if (maxCreated < article.created) maxCreated = article.created
+                if (minCreated > article.created) minCreated = article.created
+                preprocess(article)
+                article.index = $scope.articles.length
+                $scope.articles.push(article)
+              }
+            })
+            if (!delta) {
+              $scope.getMoreArticlesStyle = "display: none"
+              $scope.lastArticleStyle = ""
+            }
+            if (!$scope.$$phase) $scope.$apply()
+          })
   }
 
   $scope.like = function(article) {

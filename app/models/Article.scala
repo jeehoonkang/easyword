@@ -38,9 +38,20 @@ object Article {
     }
   }
 
-  def findArticles(skip: Int, limit: Int): List[(ObjectId, Article)] = {
+  def findArticlesBefore(criteria: DateTime): List[(ObjectId, Article)] = {
     val buffer = new ListBuffer[(ObjectId, Article)]()
-    for (article <- collection.find().sort(MongoDBObject("created" -> -1)).skip(skip).limit(limit)) {
+    for (article <- collection.find("created" $lte criteria).sort(MongoDBObject("created" -> -1)).limit(20 + 1)) {
+      fromObject(article) match {
+        case None => ()
+        case Some(id_article) => buffer += id_article
+      }
+    }
+    buffer.result()
+  }
+
+  def findArticlesAfter(criteria: DateTime): List[(ObjectId, Article)] = {
+    val buffer = new ListBuffer[(ObjectId, Article)]()
+    for (article <- collection.find("created" $gte criteria).sort(MongoDBObject("created" -> -1))) {
       fromObject(article) match {
         case None => ()
         case Some(id_article) => buffer += id_article
