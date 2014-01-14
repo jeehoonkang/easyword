@@ -35,7 +35,7 @@
           <li ng-repeat="article in articles" class="well">
             <p>
               <strong>{{article.authorName}}</strong>
-              {{article.content}}
+              <span style="white-space: pre-line;">{{article.content}}</span>
             </p>
             <p style="font-size: 13px">
               <a href="" ng-click="like(article)" style="{{article.likeStyle}}">좋아요</a>
@@ -51,7 +51,7 @@
                 <li ng-repeat="comment in article.comments">
                   <p style="font-size: 13px">
                     <strong>{{comment.authorName}}</strong>
-                    {{comment.content}}
+                    <span style="white-space: pre-line;">{{comment.content}}</span>
                   </p>
                 </li>
                 <li>

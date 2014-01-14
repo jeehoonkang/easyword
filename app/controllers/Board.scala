@@ -56,7 +56,7 @@ object Board extends Controller with Secured {
     val articleId = new ObjectId(id)
     val article = Article.findById(articleId)
     article match {
-      case None => BadRequest("")
+      case None => BadRequest("failed: no such article")
       case Some(article) =>
         Ok(views.html.update(id, articleForm.fill(article.content)))
     }
@@ -64,7 +64,7 @@ object Board extends Controller with Secured {
 
   def create = withUser { case (userId, user) => implicit request =>
     articleForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(""),
+      formWithErrors => BadRequest("failed: " + formWithErrors("text")),
       content => {
         Article.create(Article(userId, content, new DateTime()))
         Redirect(routes.Board.index).flashing(
@@ -78,14 +78,14 @@ object Board extends Controller with Secured {
     val articleId = new ObjectId(id)
     val article = Article.findById(articleId)
     article match {
-      case None => BadRequest("")
+      case None => BadRequest("failed: no such article")
       case Some(article) => {
         if (article.authorId != userId) {
-          BadRequest("")
+          BadRequest("failed: authentication")
         }
         else {
           articleForm.bindFromRequest.fold(
-            formWithErrors => BadRequest(""),
+            formWithErrors => BadRequest("failed: " + articleForm),
             content => {
               Article.update(articleId, Article(article.authorId, content, article.created))
               Redirect(routes.Board.index).flashing(
@@ -100,7 +100,7 @@ object Board extends Controller with Secured {
 
   def createComment(authorId: String) = withUser { case (userId, user) => implicit request =>
     commentForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(""),
+      formWithErrors => BadRequest("failed: " + commentForm),
       content => {
         Comment.create(Comment(
           userId,
@@ -161,11 +161,13 @@ object Board extends Controller with Secured {
 
   def refresh() = withUser { case (userId, user) => implicit request =>
     getMoreArticlesForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(""),
+      formWithErrors => BadRequest("failed: " + formWithErrors),
       data => {
         val created = new DateTime(data.toLong)
         val articles = Article.findArticlesAfter(created)
-        val result = articles.map { case (articleId, article) => articleToClient(articleId, article, userId) }
+        val result = articles.map { case (articleId, article) =>
+          articleToClient(articleId, article, userId)
+        }
         Ok(Json.toJson(result))
       }
     )
@@ -173,11 +175,13 @@ object Board extends Controller with Secured {
 
   def getMoreArticles() = withUser { case (userId, user) => implicit request =>
     getMoreArticlesForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(""),
+      formWithErrors => BadRequest("failed: " + formWithErrors),
       data => {
         val created = new DateTime(data.toLong)
         val articles = Article.findArticlesBefore(created)
-        val result = articles.map { case (articleId, article) => articleToClient(articleId, article, userId) }
+        val result = articles.map { case (articleId, article) =>
+          articleToClient(articleId, article, userId)
+        }
         Ok(Json.toJson(result))
       }
     )
@@ -195,7 +199,7 @@ object Board extends Controller with Secured {
     Article.findById(articleId) map { article =>
       Ok(articleToClient(articleId, article, userId))
     } getOrElse {
-      BadRequest("")
+      BadRequest("failed: no such article")
     }
   }
 
@@ -205,7 +209,7 @@ object Board extends Controller with Secured {
     Article.findById(articleId) map { article =>
       Ok(articleToClient(articleId, article, userId))
     } getOrElse {
-      BadRequest("")
+      BadRequest("failed: no such article")
     }
   }
 }
