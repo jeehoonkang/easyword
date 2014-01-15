@@ -45,6 +45,13 @@ object Board extends Controller with Secured {
     })
   )
 
+  val articleForm1000 = Form(
+    "text" -> text.verifying ("어려운 말이 들어있어요.", { text =>
+      val pattern = """^([\wㄱ-ㅎ가-힣'`Â´\x81-\xFF]+)$$""".r
+      pattern.findAllIn(text).forall(SpellCheck.spellcheckLookup1000(_))
+    })
+  )
+
   val commentForm = Form(
     "text" -> text
   )
@@ -73,7 +80,7 @@ object Board extends Controller with Secured {
       content => {
         val now = new DateTime()
         if (now.isBefore(dueDate)) {
-          Article.create(Article(userId, content, now))
+          Article.create(Article(userId, content, now, false))
           Redirect(routes.Board.index).flashing(
             "success" -> "글을 썼어요!"
           )
@@ -83,6 +90,29 @@ object Board extends Controller with Secured {
         }
       }
     )
+  }
+
+  def createHardcore = withUser { case (userId, user) => implicit request =>
+    articleForm.bindFromRequest.fold(
+      formWithErrors => BadRequest("failed: " + formWithErrors("text")),
+      content => {
+        val now = new DateTime()
+        if (now.isBefore(dueDate)) {
+          Article.create(Article(userId, content, now, true))
+          println("hi")
+          Redirect(routes.Board.index).flashing(
+            "success" -> "글을 썼어요!"
+          )
+        }
+        else {
+          BadRequest("failed: over due date")
+        }
+      }
+    )
+  }
+
+  def hardcoreGet = withUser { case (userId, user) => implicit request =>
+    Ok(views.html.hardcore(articleForm1000))
   }
 
   def update(id: String) = withUser { case (userId, user) => implicit request =>
@@ -100,7 +130,7 @@ object Board extends Controller with Secured {
             content => {
               val now = new DateTime()
               if (now.isBefore(dueDate)) {
-                Article.update(articleId, Article(article.authorId, content, article.created))
+                Article.update(articleId, Article(article.authorId, content, article.created, article.hardcore))
                 Redirect(routes.Board.index).flashing(
                   "success" -> "글을 바꿨어요!"
                 )
@@ -150,6 +180,7 @@ object Board extends Controller with Secured {
       "authorId" -> Json.toJson(article.authorId),
 
       "created" -> Json.toJson(article.created),
+      "hardcore" -> Json.toJson(article.hardcore),
 
       "numLikes" -> Json.toJson(numLikes),
       "numComments" -> Json.toJson(numComments),

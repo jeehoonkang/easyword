@@ -25,59 +25,13 @@
         </center>
       </div>
       <div class="well">
-        <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href='@routes.Assets.at("words/words.txt")'>가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써봐요.</p>
-        @helper.form(routes.Board.create) {
+        <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href='@routes.Assets.at("words/1000-morpheme.txt")'>가장 많이 쓰이는 한국어 낱말</a> <strong>1000개</strong>만 사용해서 글을 써봐요.</p>
+        @helper.form(routes.Board.createHardcore) {
         @helper.CSRF.formField
         <textarea id="text" name="text" rows="10" style="width: 95%; resize: none">어려운 말을 쓰면 이렇게 밑줄이 생겨요.</textarea>
         <p><button id="submit" class="btn btn-primary">쓰기</button>&nbsp;<span id="message"></span></p>
         <input id="count" style="display: none"></input>
         }
-      </div>
-      <div ng-controller="ArticleCtrl">
-        <div class="well">
-          <center><a href="" ng-click="refresh()">새로고침</a></center>
-        </div>
-        <ul class="unstyled">
-          <li ng-repeat="article in articles">
-            <div class="well" style="{{article.hardcoreStyle}}">
-              <p>
-                <strong>{{article.authorName}}</strong>
-                <span style="white-space: pre-line;">{{article.content}}</span>
-              </p>
-              <p style="font-size: 13px">
-                <a href="" ng-click="like(article)" style="{{article.likeStyle}}">좋아요</a>
-                <a href="" ng-click="unlike(article)" style="{{article.unlikeStyle}}">좋아요 취소</a>
-                | {{article.numLikes}}명이 좋아합니다
-                <span style="{{article.updateStyle}}">
-                  | <a href='@{routes.Board.updateGet("")}{{article.id}}'>바꾸기</a>
-                </span>
-                <span style="{{article.hardcoreMsgStyle}}">
-                  | 1000자 도전입니다
-                </span>
-                <span style="{{article.getCommentsStyle}}">
-                  | <a href="" ng-click="getComments(article)">댓글 {{article.numComments}}개 보기</a>
-                </span>
-                <ul class="comments">
-                  <li ng-repeat="comment in article.comments">
-                    <p style="font-size: 13px">
-                      <strong>{{comment.authorName}}</strong>
-                      <span style="white-space: pre-line;">{{comment.content}}</span>
-                    </p>
-                  </li>
-                  <li>
-                    <textarea ng-model="article.newComment" ng-keypress="createComment($event, article)" rows="2" style="font-size: 13px; width: 95%; resize: none"></textarea>
-                  </li>
-                </ul>
-              </p>
-            </div>
-          </li>
-        </ul>
-        <div class="well">
-          <center>
-            <a href="" ng-click="getMoreArticles()" style="{{getMoreArticlesStyle}}">20개 더 보기</a>
-            <div style="{{lastArticleStyle}}">마지막 글입니다.</div>
-          </center>
-        </div>
       </div>
     </div>
     <div class="span3"></div>
@@ -85,7 +39,7 @@
 
   <script type="text/javascript" src='@routes.Assets.at("js/article.js")'></script>
 
-  <script type="text/javascript" src='@routes.Assets.at("phpspellcheck/include.js")'></script>
+  <script type="text/javascript" src='@routes.Assets.at("phpspellcheck1000/include.js")'></script>
   <script type="text/javascript">
     var mySpell = new LiveSpellInstance()
     mySpell.Fields = "text"

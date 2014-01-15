@@ -15,7 +15,7 @@ import org.joda.time.DateTime
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.conversions.scala._
 
-case class Article(authorId: ObjectId, content: String, created: DateTime)
+case class Article(authorId: ObjectId, content: String, created: DateTime, hardcore: Boolean)
 
 object Article {
   val mongoClient = MongoClient("localhost", 27017)
@@ -25,8 +25,14 @@ object Article {
   RegisterJodaTimeConversionHelpers()
   
   private def fromObject(obj: MongoDBObject): Option[(ObjectId, Article)] = {
-    (obj.getAs[ObjectId]("_id"), obj.getAs[ObjectId]("authorId"), obj.getAs[String]("content"), obj.getAs[DateTime]("created")) match {
-      case (Some(id), Some(authorId), Some(content), Some(created)) => Some((id, Article(authorId, content, created)))
+    (obj.getAs[ObjectId]("_id"),
+      obj.getAs[ObjectId]("authorId"),
+      obj.getAs[String]("content"),
+      obj.getAs[DateTime]("created"),
+      obj.getAs[Boolean]("hardcore")
+    ) match {
+      case (Some(id), Some(authorId), Some(content), Some(created), hardcore) =>
+        Some((id, Article(authorId, content, created, hardcore.getOrElse(false))))
       case _ => None
     }
   }
@@ -64,7 +70,8 @@ object Article {
     val obj = MongoDBObject(
       "authorId" -> article.authorId,
       "content" -> article.content,
-      "created" -> article.created
+      "created" -> article.created,
+      "hardcore" -> article.hardcore
     )
     collection.insert(obj)
     obj.getAs[ObjectId]("_id")
@@ -74,7 +81,8 @@ object Article {
     val obj = MongoDBObject(
       "authorId" -> article.authorId,
       "content" -> article.content,
-      "created" -> article.created
+      "created" -> article.created,
+      "hardcore" -> article.hardcore
     )
     val result = collection.update(
       MongoDBObject("_id" -> articleId),

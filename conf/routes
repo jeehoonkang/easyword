@@ -4,11 +4,13 @@
 
 
 GET     /                                 controllers.Board.index
+GET     /hardcore                         controllers.Board.hardcoreGet
 GET     /board/article/update/:articleId  controllers.Board.updateGet(articleId)
 
 GET     /board/article/refresh            controllers.Board.refresh
 GET     /board/article/getMoreArticles    controllers.Board.getMoreArticles
 POST    /board/article/create             controllers.Board.create
+POST    /board/article/createHardcore     controllers.Board.createHardcore
 POST    /board/article/update/:articleId  controllers.Board.update(articleId)
 POST    /board/article/like/:articleId    controllers.Board.like(articleId)
 POST    /board/article/unlike/:articleId  controllers.Board.unlike(articleId)
@@ -26,5 +28,6 @@ GET     /auth/logout                      controllers.Auth.logout
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/phpspellcheck/core/       controllers.SpellCheck.spellcheck
+GET     /assets/phpspellcheck1000/core/   controllers.SpellCheck.spellcheck1000
 GET     /assets/*file                     controllers.Assets.at(path="/public", file)
 GET     /webjars/*file                    controllers.WebJarAssets.at(file)

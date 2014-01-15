@@ -12,6 +12,8 @@ function ArticleCtrl($scope) {
 
     if (article.likeStyle == undefined) article.likeStyle = article.liked ? "display: none" : ""
     if (article.unlikeStyle == undefined) article.unlikeStyle = article.liked ? "" : "display: none"
+    if (article.hardcoreStyle == undefined) article.hardcoreStyle = article.hardcore ? "background-color:#FFFFCC" : ""
+    if (article.hardcoreMsgStyle == undefined) article.hardcoreMsgStyle = article.hardcore ? "" : "display: none"
   }
 
   var ids = {}
