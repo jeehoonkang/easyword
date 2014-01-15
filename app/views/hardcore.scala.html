@@ -24,8 +24,8 @@
           <strong id="countdown"></strong>
         </center>
       </div>
-      <div class="well">
-        <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href='@routes.Assets.at("words/1000-morpheme.txt")'>가장 많이 쓰이는 한국어 낱말</a> <strong>1000개</strong>만 사용해서 글을 써봐요.</p>
+      <div class="well" style="background-color:#FFFFCC">
+        <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href='@routes.Assets.at("words/words1000.txt")'>가장 많이 쓰이는 한국어 낱말</a> <strong>1000개</strong>만 사용해서 글을 써봐요.</p>
         @helper.form(routes.Board.createHardcore) {
         @helper.CSRF.formField
         <textarea id="text" name="text" rows="10" style="width: 95%; resize: none">어려운 말을 쓰면 이렇게 밑줄이 생겨요.</textarea>

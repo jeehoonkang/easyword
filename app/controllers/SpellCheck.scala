@@ -23,7 +23,7 @@ import com.typesafe.plugin._
 object SpellCheck extends Controller {
   val ma = new MorphemeAnalyzer()
   val words: Set[String] = scala.io.Source.fromFile("public/words/words.txt").getLines.foldLeft(Set[String]())(_ + _)
-  val words1000: Set[String] = scala.io.Source.fromFile("public/words/1000-morpheme.txt").getLines.foldLeft(Set[String]())(_ + _)
+  val words1000: Set[String] = scala.io.Source.fromFile("public/words/words1000.txt").getLines.foldLeft(Set[String]())(_ + _)
 
   def spellcheck = Action { implicit request =>
     request.queryString.get("args") match {

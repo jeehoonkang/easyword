@@ -3,7 +3,11 @@
 @main("글 바꾸기") {
   <div class="row-fluid">
     <div class="span3"></div>
+    @if(hardcore) {
+    <div class="span6 well" style="background-color:#FFFFCC">
+    } else {
     <div class="span6 well">
+    }
       @flash.get("success").map { info =>
       <p class="text-success">
         @info
@@ -15,7 +19,7 @@
       </p>
       }
       @if(hardcore) {
-      <p><a href='@routes.Assets.at("words/1000-morpheme.txt")'>가장 많이 쓰이는 한국어 낱말</a> <strong>1000개</strong>만 사용해서 글을 써요.</p>
+      <p><a href='@routes.Assets.at("words/words1000.txt")'>가장 많이 쓰이는 한국어 낱말</a> <strong>1000개</strong>만 사용해서 글을 써요.</p>
       } else {
       <p><a href='@routes.Assets.at("words/words.txt")'>가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써요.</p>
       }
