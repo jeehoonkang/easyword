@@ -37,7 +37,10 @@ object Board extends Controller with Secured {
   }
 
   val articleForm = Form(
-    "text" -> text.verifying ("어려운 말이 들어있어요.", text => text.split("\\s").forall(SpellCheck.spellcheckLookup(_)))
+    "text" -> text.verifying ("어려운 말이 들어있어요.", { text =>
+      val pattern = """[\wㄱ-ㅎ가-힣'`Â´\x81-\xFF]+""".r
+      pattern.findAllIn(text).forall(SpellCheck.spellcheckLookup(_))
+    })
   )
 
   val commentForm = Form(
