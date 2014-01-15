@@ -1,4 +1,4 @@
-@(articleId: String, articleForm: Form[String])(implicit req: RequestHeader, session: Session, flash: Flash)
+@(articleId: String, articleForm: Form[String], hardcore: Boolean)(implicit req: RequestHeader, session: Session, flash: Flash)
 
 @main("글 바꾸기") {
   <div class="row-fluid">
@@ -14,7 +14,11 @@
         @error
       </p>
       }
+      @if(hardcore) {
+      <p><a href='@routes.Assets.at("words/1000-morpheme.txt")'>가장 많이 쓰이는 한국어 낱말</a> <strong>1000개</strong>만 사용해서 글을 써요.</p>
+      } else {
       <p><a href='@routes.Assets.at("words/words.txt")'>가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써요.</p>
+      }
       @helper.form(routes.Board.update(articleId)) {
       @helper.CSRF.formField
       <textarea id="text" name="text" rows="10" style="width: 95%; resize: none">@articleForm("text").value</textarea>
@@ -27,7 +31,11 @@
 
   <script type="text/javascript" src='@routes.Assets.at("js/article.js")'></script>
 
+  @if(hardcore) {
+  <script type="text/javascript" src='@routes.Assets.at("phpspellcheck1000/include.js")'></script>
+  } else {
   <script type="text/javascript" src='@routes.Assets.at("phpspellcheck/include.js")'></script>
+  }
   <script type="text/javascript">
     var mySpell = new LiveSpellInstance()
     mySpell.Fields = "text"

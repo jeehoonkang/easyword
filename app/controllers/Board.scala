@@ -70,7 +70,12 @@ object Board extends Controller with Secured {
     article match {
       case None => BadRequest("failed: no such article")
       case Some(article) =>
-        Ok(views.html.update(id, articleForm.fill(article.content)))
+        if (article.hardcore) {
+          Ok(views.html.update(id, articleForm1000.fill(article.content), article.hardcore))
+        }
+        else {
+          Ok(views.html.update(id, articleForm.fill(article.content), article.hardcore))
+        }
     }
   }
 
