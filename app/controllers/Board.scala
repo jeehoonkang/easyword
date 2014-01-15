@@ -16,7 +16,7 @@ import play.api.libs.json._
 import play.api.Play.current
 import scala.concurrent.Future
 
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, DateTimeZone}
 
 import com.typesafe.plugin._
 
@@ -24,6 +24,8 @@ import models._
 import com.mongodb.casbah.Imports._
 
 object Board extends Controller with Secured {
+  val dueDate = new DateTime(2014, 1, 15, 18, 0, 1, DateTimeZone.forID("Asia/Seoul"))
+
   implicit val objectIdReads = new Reads[ObjectId] {
     def reads(json: JsValue): JsResult[ObjectId] = {
       JsSuccess(new ObjectId(json.as[String]))
@@ -69,10 +71,16 @@ object Board extends Controller with Secured {
     articleForm.bindFromRequest.fold(
       formWithErrors => BadRequest("failed: " + formWithErrors("text")),
       content => {
-        Article.create(Article(userId, content, new DateTime()))
-        Redirect(routes.Board.index).flashing(
-          "success" -> "글을 썼어요!"
-        )
+        val now = new DateTime()
+        if (now.isBefore(dueDate)) {
+          Article.create(Article(userId, content, now))
+          Redirect(routes.Board.index).flashing(
+            "success" -> "글을 썼어요!"
+          )
+        }
+        else {
+          BadRequest("failed: over due date")
+        }
       }
     )
   }
@@ -90,10 +98,16 @@ object Board extends Controller with Secured {
           articleForm.bindFromRequest.fold(
             formWithErrors => BadRequest("failed: " + articleForm),
             content => {
-              Article.update(articleId, Article(article.authorId, content, article.created))
-              Redirect(routes.Board.index).flashing(
-                "success" -> "글을 바꿨어요!"
-              )
+              val now = new DateTime()
+              if (now.isBefore(dueDate)) {
+                Article.update(articleId, Article(article.authorId, content, article.created))
+                Redirect(routes.Board.index).flashing(
+                  "success" -> "글을 바꿨어요!"
+                )
+              }
+              else {
+                BadRequest("failed: over due date")
+              }
             }
           )
         }

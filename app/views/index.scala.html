@@ -19,6 +19,12 @@
     <div class="span3"></div>
     <div class="span6">
       <div class="well">
+        <center>
+          <p><strong>공지</strong>: 2014년 1월 15일 오후 6시에 마감합니다.</p>
+          <strong style="color: red;"><div id="countdown"></div></strong>
+        </center>
+      </div>
+      <div class="well">
         <p>연구 내용을 쉽게 쓸 수 있는 내공이 있으세요? <a href='@routes.Assets.at("words/words.txt")'>가장 많이 쓰이는 한국어 낱말</a>만 사용해서 글을 써봐요.</p>
         @helper.form(routes.Board.create) {
         @helper.CSRF.formField
@@ -100,5 +106,37 @@
     };
 
     enableButton();
+  </script>
+
+  <script type="text/javascript">
+    var duedate = new Date('1/15/2014 18:00:01 GMT+09:00')
+    var now = new Date()
+
+    countdown('countdown', parseInt((duedate - now) / 1000, 10));
+    function countdown(element, seconds) {
+      // set time for the particular countdown
+      var time = seconds;
+      var interval = setInterval(function() {
+        var el = document.getElementById(element);
+        // if the time is 0 then end the counter
+        if(time <= 0) {
+          el.innerHTML = "마감했습니다!";
+          clearInterval(interval);
+          return;
+        }
+        var hours = Math.floor(time / 3600);
+        if (hours < 10) hours = "0" + hours;
+
+        var minutes = Math.floor((time - hours * 3600) / 60);
+        if (minutes < 10) minutes = "0" + minutes;
+
+        var seconds = (time - hours * 3600 - minutes * 60);
+        if (seconds < 10) seconds = "0" + seconds;
+
+        var text = hours + ':' + minutes + ':' + seconds;
+        el.innerHTML = text;
+        time--;
+      }, 1000);
+    }
   </script>
 }
