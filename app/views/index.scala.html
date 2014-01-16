@@ -41,7 +41,7 @@
           <li ng-repeat="article in articles">
             <div class="well" style="{{article.hardcoreStyle}}">
               <p>
-                <strong>{{article.authorName}} (<a href="{{article.authorEmail}}">{{article.authorEmail}}</a>)</strong>
+                <strong>{{article.authorName}}</strong> (<a href="mailto:{{article.authorEmail}}">{{article.authorEmail}}</a>)
                 <span style="white-space: pre-line;">{{article.content}}</span>
               </p>
               <p style="font-size: 13px">
@@ -60,7 +60,7 @@
                 <ul class="comments">
                   <li ng-repeat="comment in article.comments">
                     <p style="font-size: 13px">
-                      <strong>{{comment.authorName}} (<a href="{{comment.authorEmail}}">{{comment.authorEmail}}</a>)</strong>
+                      <strong>{{comment.authorName}}</strong> (<a href="{{mailto:comment.authorEmail}}">{{comment.authorEmail}}</a>)
                       <span style="white-space: pre-line;">{{comment.content}}</span>
                     </p>
                   </li>
