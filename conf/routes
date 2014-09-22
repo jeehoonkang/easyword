@@ -3,7 +3,7 @@
 # ~~~~
 
 
-GET     /                                 controllers.Board.index
+GET     /board                            controllers.Board.index
 GET     /hardcore                         controllers.Board.hardcoreGet
 GET     /board/article/update/:articleId  controllers.Board.updateGet(articleId)
 
@@ -20,7 +20,7 @@ GET     /board/comment/list/:articleId    controllers.Board.comments(articleId)
 
 GET     /auth/modifyGet                   controllers.Auth.modifyGet
 
-GET     /auth/login                       controllers.Auth.login
+GET     /                                 controllers.Auth.login
 POST    /auth/login                       controllers.Auth.authenticate
 POST    /auth/register                    controllers.Auth.register
 POST    /auth/modify                      controllers.Auth.modify
