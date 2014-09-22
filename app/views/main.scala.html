@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html ng-app>
   <head>
-    <title>2014 소프트웨어 무결점 백일장 - @title</title>
+    <title>EasyWord - @title</title>
     <link rel='shortcut icon' type='image/png' href='@routes.Assets.at("images/favicon.png")'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))'>
@@ -75,7 +75,7 @@
       <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
           <div class="container-fluid">
-            <a id="titleLink" class="brand" href='@routes.Board.index()'>2014 소프트웨어 무결점 백일장</a>
+            <a id="titleLink" class="brand" href='@routes.Board.index()'>EasyWord</a>
             <ul class="nav pull-right">
               @session.get(Security.username).map { username =>
               <li class="navbar-text">@{username}</li>
@@ -84,7 +84,7 @@
               <li><a href='@routes.Board.hardcoreGet'>1000단어 도전</a></li>
               }.getOrElse {
               }
-              <li><a href='mailto:jeehoon@@jeehoon.me'>버그 리포트</a></li>
+              <li><a href='http://sf.snu.ac.kr/jeehoon.kang'>버그 리포트</a></li>
             </ul>
           </div>
         </div>
@@ -96,7 +96,7 @@
     </div>
     <div id="footer">
       <div class="container">
-        <p class="muted credit"><a href="http://jeehoon.me">강지훈</a>이 만듬 | 2014년 1월 13일 고침 | <a href="https://github.com/lunaticas/easyword/">GitHub repository</a></p>
+        <p class="muted credit"><a href="http://sf.snu.ac.kr/jeehoon.kang">강지훈</a>이 만듬 | 2014년 1월 13일 고침 | <a href="https://github.com/lunaticas/easyword/">GitHub repository</a></p>
       </div>
     </div>
     <script>
