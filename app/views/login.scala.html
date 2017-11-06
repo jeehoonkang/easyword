@@ -4,7 +4,7 @@
   <div class="hero-unit">
     <p>
       <h2>
-        어려운 연구내용을 <a href='@routes.Assets.at("words/words.txt")'>가장 흔한 2000개 낱말</a>만
+        어려운 연구내용을 <a href='@routes.Assets.at("words/words.txt")'>가장 흔한 @{req.getQueryString("words") match { case None => 2000; case Some(x) => x }}개 낱말</a>만
         사용해서 설명할 수 있으신가요?<br />
       </h2>
       쉽지는 않지만 가능합니다. 멋진 예를 만들어 주세요.<br />
@@ -14,6 +14,12 @@
 <div class="row-fluid">
   <div class="span6">
     <h4>쉬운 글 쓰기 도움창</h4>
+    <p>
+      (<a href="?words=1000">1000단어</a>
+      <a href="?words=2000">2000단어</a>
+      <a href="?words=4000">4000단어</a>
+      <a href="?words=6000">6000단어</a>)
+    </p>
     <p><span id="message"></span></p>
     <textarea id="text" name="text" rows="7" style="width: 95%; resize: none">어려운 말을 쓰면 이렇게 밑줄이 생겨요.</textarea>    
     <input id="count" style="display: none"></input>
@@ -64,8 +70,15 @@
       <li><a href="http://xkcd.com/1133/">Up Goer Five</a> (cartoon)</li>
       <li><a href="http://splasho.com/upgoer5/">영어 버전</a></li>
       <li><a href="https://www.amazon.com/Thing-Explainer-Complicated-Stuff-Simple/dp/0544668251/ref=sr_1_1?ie=UTF8&qid=1508285753&sr=8-1&keywords=thing+explainer">책 Think Explainer</a></li>
-      <li><a herf="http://www.csail.mit.edu/csail_researchers_explain_things">MIT CSAIL Researchers explain things</a></li>
+      <li><a href="http://www.csail.mit.edu/csail_researchers_explain_things">MIT CSAIL Researchers explain things</a></li>
       <li><a href="http://www.scottaaronson.com/blog/?p=1628">My quantum computing research explained</a></li>
+    </ul>
+  </div>
+
+  <div class="span6">
+    <h4>우리글 예</h4>
+    <ul>
+      <li><a href="/assets/dokang.txt">손전화 컴퓨터 (강동옥, Fasoo.com)</a></li>
     </ul>
   </div>
 </div>
@@ -101,6 +114,7 @@
     mySpell.CheckGrammar = false
     mySpell.ShowMeanings = false
     mySpell.ShowSummaryScreen = false
+    mySpell.Words = @{req.getQueryString("words") match { case None => 2000; case Some(x) => x }}
     mySpell.ActivateAsYouType()
   </script>
 

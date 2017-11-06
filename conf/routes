@@ -28,6 +28,6 @@ GET     /auth/logout                      controllers.Auth.logout
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/phpspellcheck/core/       controllers.SpellCheck.spellcheck
-GET     /assets/phpspellcheck1000/core/   controllers.SpellCheck.spellcheck1000
+# GET     /assets/phpspellcheck1000/core/   controllers.SpellCheck.spellcheck1000
 GET     /assets/*file                     controllers.Assets.at(path="/public", file)
 GET     /webjars/*file                    controllers.WebJarAssets.at(file)
